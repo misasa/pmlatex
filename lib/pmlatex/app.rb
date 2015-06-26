@@ -49,6 +49,7 @@ EOS
       name = name.split("\n").map{|line| " "*4 + line}.join("\n")
 
       history = <<-EOS
+June 26, 2015: gem version 0.0.1 released
 April 5, 2015: First release with documentation.
 EOS
       history = history.split("\n").map{|line| " "*4 + line}.join("\n")
