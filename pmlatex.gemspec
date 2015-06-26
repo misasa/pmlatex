@@ -20,4 +20,10 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rspec", "~> 3.1"
+  spec.add_development_dependency "turnip", "~> 1.2"
+
+  spec.add_dependency "medusa_rest_client", "~> 0.0"
+  spec.add_dependency "trollop", "~> 2.1"
+
 end

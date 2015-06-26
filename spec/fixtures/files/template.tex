@@ -1,0 +1,63 @@
+%% Last modified: Tue Aug 05 14:58:35 JST 2014 <c:/Users/dream/templates/template.tex by dream>
+\documentclass[12pt]{article}
+% \usepackage[whole]{bxcjkjatype} % for Japanese
+\usepackage[margin=0.5in,noheadfoot,a4paper]{geometry}
+\usepackage{natbib}
+\usepackage{pmlatex} % take out for ja-platex
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{title}
+\author{Sisyphus Tartaros}
+\date{}
+
+\begin{document}
+\maketitle
+% FILEPATH START
+% FILEPATH END
+\begin{abstract}
+\end{abstract}
+\tableofcontents
+\section{INTRODUCTION}
+\section{EXPERIMENTAL}
+From each chunk (besides `1-1A' and `OK-10VM'), aliquot of a few mg
+was taken and \cite{20140120174904-205862} its oxygen-isotope abundance was determined by IR-MS with laser-fluorination.
+A session list is shown in Table \ref{tbl:sessions}.
+\begin{table}[htdp]
+  \begin{normalsize}
+    \begin{center}
+      \caption{A session list}
+      % BEGIN RECEIVE ORGTBL tbl:sessions
+      % END RECEIVE ORGTBL tbl:sessions
+      \iffalse
+      #+ORGTBL: SEND tbl:sessions orgtbl-to-latex :no-escape t
+      |------+---------+-------+--------|
+      | date | session | stone | remark |
+      |------+---------+-------+--------|
+      |      |         |       |        |
+      |------+---------+-------+--------|
+      \fi
+      \label{tbl:sessions}
+    \end{center}
+  \end{normalsize}
+\end{table}
+
+\section{RESULTS}
+\section{DISCUSSIONS}
+\include{section1}
+\bibliographystyle{gca_like} % \bibliographystyle{apalike-url}
+\bibliography{ref_etc,ref_pml,ref_dream}
+\listoffigures
+\listoftables
+
+\end{document}
+
+%% platex
+% \documentclass[12pt]{jarticle}
+% \usepackage[expert,deluxe]{otf}
+% \usepackage[dvipdfmx]{hyperref}
+% \usepackage[dvipdfmx]{graphicx,color}
+
+%% paper size
+% \usepackage[paperwidth=16cm,paperheight=15cm,margin=0.2cm]{geometry}  % X220
+% \usepackage[paperwidth=8.5cm,paperheight=11cm,margin=0.0cm]{geometry} % Kindle
