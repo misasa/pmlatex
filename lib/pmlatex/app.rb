@@ -98,16 +98,16 @@ it inserts letters `\BibliographySisyphus{20140806114754-746408}' into
 `report.tex'.  You recompile `report.tex'.  You have to correlate the
 bib record and stones shown up on the document.  You invoke `pmlatex
 scan report'.  The program scans the document, picks stones, and
-exports them to `report.ss'.  By handling the `report.ss'
-appropriately, you correlate the bib record and the stones.  Then you
-invoke `pmlatex commit report' to upload the PDF file to the bib
-record.  The commands you invoked on this scene are summarized as
-below.
+correlate the bib record to the stones.  It also exports stone records
+to `report.ss'.  By handling the `report.ss' appropriately, you
+re-correlate the bib record and the stones.  Then you invoke `pmlatex
+commit report' to upload the PDF file to the bib record.  The commands
+you invoked on this scene are summarized as below.
 
- > pmlatex add report
- > pdflatex report
- > pmlatex scan report
- > pmlatex commit report
+ $ pmlatex add report
+ $ pdflatex report
+ $ pmlatex scan report
+ $ pmlatex commit report
 
 Whenever you revise `report.tex' and have the up-to-date `report.pdf',
 you want to replace `report.pdf' on Medusa by the newest PDF.  You
@@ -116,8 +116,8 @@ title, author, and date on the bib record.  You invoke `pmlatex update
 report' to do so.  The commands you invoked on this scene are
 summarized as below.
 
- > pmlatex commit report
- > pmlatex update report
+ $ pmlatex commit report
+ $ pmlatex update report
 EOS
       example = example.split("\n").map{|line| " "*4 + line}.join("\n")
 
