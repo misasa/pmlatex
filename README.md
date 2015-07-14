@@ -1,6 +1,6 @@
 # Pmlatex
 
-Pmlatex 
+pmlatex -- upload PDF file created by `pmlatex.sty' and `pdflatex' to Medusa
 
 ## Installation
 
