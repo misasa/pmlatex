@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-See online document
+See online document:
 
     $ pmlatex --help
 
