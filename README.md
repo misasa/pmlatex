@@ -16,13 +16,23 @@ And then execute:
 
 Or install it yourself as:
 
+    $ gem source -a http://dream.misasa.okayama-u.ac.jp/rubygems
     $ gem install pmlatex
+
+## Commands
+
+Commands are summarized as:
+
+| command          | description                                   | note                       |
+|------------------|-----------------------------------------------|----------------------------|
+| pmlatex add      | create a bib record in Medusa                 |                            |
+| pmlatex commit   | upload pdffile to the bib record              |                            |
+| pmlatex update   | update title, date, and author of the record  |                            |
+| pmlatex scan     | correlate the bib record with stones          |                            |
 
 ## Usage
 
-See online document:
-
-    $ pmlatex --help
+See online document with option `--help`.
 
 ## Contributing
 
