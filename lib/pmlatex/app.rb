@@ -137,9 +137,7 @@ EOS
       Trollop::options(argv) do
       banner <<-EOS
 Usage: pmlatex [options] <subcommand>
-  Type 'pmlatex <subcommand> --help' for help on a specific subcommand.
 
-   
   Available subcommands:
   #{sub_commands.join(' ')}
 

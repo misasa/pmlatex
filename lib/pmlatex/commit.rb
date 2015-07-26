@@ -3,7 +3,11 @@ module Pmlatex
 
     def cmd_options(argv=ARGV)
       Trollop::options(argv) do
-        banner "  Usage: pmlatex commit [options] mylocalfile"
+        # banner "  Usage: pmlatex commit [options] mylocalfile"
+        banner <<EOS
+Usage: pmlatex commit [options] mylocalfile
+See `pmlatex --help'
+EOS
         opt :message, "specify log message", :type => :string
       end
     end
