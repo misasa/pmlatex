@@ -2,12 +2,12 @@
 
 Upload PDF file created by `pmlatex.sty` and `pdflatex` to Medusa
 
-## Dependency
+# Dependency
 
 ### [medusa_rest_client](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/medusa_rest_client/tree/master "follow instruction")
 
 
-## Installation
+# Installation
 
 Add this line to your application's Gemfile:
 
@@ -24,7 +24,7 @@ Or install it yourself as:
     $ gem source -a http://dream.misasa.okayama-u.ac.jp/rubygems
     $ gem install pmlatex
 
-## Commands
+# Commands
 
 Commands are summarized as:
 
@@ -35,11 +35,11 @@ Commands are summarized as:
 | pmlatex update   | update title, date, and author of the record  |                            |
 | pmlatex scan     | correlate the bib record with stones          |                            |
 
-## Usage
+# Usage
 
 See online document with option `--help`.
 
-## Contributing
+# Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/pmlatex/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
