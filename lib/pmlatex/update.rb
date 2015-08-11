@@ -3,7 +3,11 @@ module Pmlatex
     
     def cmd_options(argv=ARGV)
       Trollop::options(argv) do
-        banner "  Usage: pmlatex update mylocalfile"
+        # banner "  Usage: pmlatex update mylocalfile"
+        banner <<EOS
+Usage: pmlatex update mylocalfile
+See `pmlatex --help'
+EOS
       end
     end
 
