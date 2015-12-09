@@ -1,4 +1,9 @@
 require 'pmlatex'
+require 'simplecov'
+require 'simplecov-rcov'
+SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
+SimpleCov.start
+
 Dir.glob("spec/steps/**/*steps.rb"){ |f| load f, true }
 
 class Output
