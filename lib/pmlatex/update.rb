@@ -55,8 +55,9 @@ EOS
     	msg += "from: #{bib.name} by #{bib_author_list} on #{bib.year}/#{bib.month}\n"
     	msg += "to  : #{tex.title} by #{author_list} on #{tex.year}/#{tex.mon}\n";
     	STDERR.puts msg;
-    	STDERR.puts "(y/n [y]) "
-      user_input = STDIN.gets.chomp
+    	# STDERR.puts "(y/n [y]) "
+    	print "(y/n [y]) "
+        user_input = STDIN.gets.chomp
       user_input = "y" if user_input.blank?
       if user_input[0].chr.downcase == "y"
         bib.name = tex.title 
