@@ -40,7 +40,7 @@ EOS
       
       existing = nil
       obj.attachment_files.each do |at|
-        print "#{at.data_file_name} <#{at.class.element_name.capitalize}: #{at.global_id}>\n"
+        # print "#{at.data_file_name} <#{at.class.element_name.capitalize}: #{at.global_id}>\n"
         existing = at if at.data_file_name == File.basename(pdffilename)
       end
       
