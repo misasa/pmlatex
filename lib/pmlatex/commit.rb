@@ -45,7 +45,7 @@ EOS
       end
       
       if existing
-    		msg = "A " + obj.class.to_s + " record named |" + obj.name + "| <#{obj.global_id}> is already with file |#{pdffilename}| <Attachment:#{existing.global_id}>. Do you want to replace it? (yes/no/append [y]) ";
+    		msg = "A " + obj.class.to_s + " record named |" + obj.name + "| <#{obj.global_id}> is already with file |#{pdffilename}| <Attachment:#{existing.global_id}>. Do you want to replace it? [Y/n/append]: ";
     		print msg;
     		user_input =  STDIN.gets.chomp;
     	  STDERR.puts "you typed '#{user_input}'." if verbose;

@@ -15,7 +15,7 @@ EOS
       raise "invalid args" unless argv.size > 0
 
       fname = argv.shift
-      process_file(fname)      
+      process_file(fname)
     end
 
     def process_file(fname)
@@ -56,7 +56,7 @@ EOS
     	msg += "to  : #{tex.title} by #{author_list} on #{tex.year}/#{tex.mon}\n";
     	STDERR.puts msg;
     	# STDERR.puts "(y/n [y]) "
-    	print "(y/n [y]) "
+    	print "[Y/n]: "
         user_input = STDIN.gets.chomp
       user_input = "y" if user_input.blank?
       if user_input[0].chr.downcase == "y"
