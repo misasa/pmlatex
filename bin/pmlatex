@@ -102,7 +102,7 @@ require 'pmlatex'
 # end
 #opts.parse!
 
-#PrefFile = "~/.orochirc"
+# PrefFile = "~/.orochirc"
 
 # Disable autoflush to terminate buffering
 # See (efaq-w32) Subprocess buffering
