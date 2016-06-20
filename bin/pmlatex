@@ -102,7 +102,12 @@ require 'pmlatex'
 # end
 #opts.parse!
 
-#PrefFile = "~/.medusarc"
+#PrefFile = "~/.orochirc"
+
+# Disable autoflush to terminate buffering
+# See (efaq-w32) Subprocess buffering
+STDOUT.sync = true
+
 app = Pmlatex::App.init()
 app.start
 exit
