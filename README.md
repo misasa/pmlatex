@@ -4,7 +4,7 @@ Upload PDF file created by `pmlatex.sty` and `pdflatex` to Medusa
 
 # Dependency
 
-## [medusa_rest_client](http://devel.misasa.okayama-u.ac.jp/gitlab/gems/medusa_rest_client/tree/master "follow instruction")
+## [medusa_rest_client](https://github.com/misasa/medusa_rest_client "follow instruction")
 
 
 # Installation
@@ -38,11 +38,3 @@ Commands are summarized as:
 # Usage
 
 See online document with option `--help`.
-
-# Contributing
-
-1. Fork it ( https://github.com/[my-github-username]/pmlatex/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
