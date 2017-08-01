@@ -49,6 +49,7 @@ EOS
       name = name.split("\n").map{|line| " "*4 + line}.join("\n")
 
       history = <<-EOS
+August 1, 2017: Update document with gem version 1.0.2
 June 26, 2015: gem version 0.0.1 released
 April 5, 2015: First release with documentation.
 EOS
@@ -90,19 +91,20 @@ EOS
 EOS
       usage = usage.split("\n").map{|line| " "*4 + line}.join("\n")
 
-      example = <<-EOS
-Let's assume you have finished writing `report.tex'.  You invoke
-`pmlatex add report'.  The program scans the document and picks title,
-date, and author, and create a new bib on Medusa.  At the same time,
-it inserts letters `\BibliographySisyphus{20140806114754-746408}' into
-`report.tex'.  You recompile `report.tex'.  You have to correlate the
-bib record and stones shown up on the document.  You invoke `pmlatex
-scan report'.  The program scans the document, picks stones, and
-correlate the bib record to the stones.  It also exports stone records
-to `report.ss'.  By handling the `report.ss' appropriately, you
-re-correlate the bib record and the stones.  Then you invoke `pmlatex
-commit report' to upload the PDF file to the bib record.  The commands
-you invoked on this scene are summarized as below.
+      example = <<-EOS Let's assume you have finished writing
+`report.tex'.  You invoke `pmlatex add report'.  The program scans the
+document and picks title, date, and author, and create a new bib on
+Medusa.  At the same time, it inserts letters
+`\BibliographySisyphus{20140806114754-746408}' into `report.tex'.  You
+recompile `report.tex'.  You will correlate the bib record and stones,
+boxes, and analyses shown up on the document.  Hereafter, only stones
+are inferred for simple explanation.  You invoke `pmlatex scan
+report'.  The program scans the document, picks stones, and correlate
+the bib record to the stones.  It also exports stones to `report.ss'.
+By handling the `report.ss' appropriately, you re-correlate the bib
+record and the stones.  Then you invoke `pmlatex commit report' to
+upload the PDF file to the bib record.  The commands you invoked on
+this scene are summarized as below.
 
  $ pmlatex add report
  $ pdflatex report
@@ -130,7 +132,7 @@ EOS
 
       implementation = <<-EOS
 Orochi, version 9
-Copyright (C) 2015 Okayama University
+Copyright (C) 2015-2017 Okayama University
 License GPLv3+: GNU GPL version 3 or later
 EOS
       implementation = implementation.split("\n").map{|line| " "*4 + line}.join("\n")
