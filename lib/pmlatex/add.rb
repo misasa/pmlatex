@@ -67,7 +67,7 @@ EOS
     	copy_to   = texfilename + ".backup"
     	FileUtils.cp(copy_from, copy_to)
 
-    	bib_line = "\\BibliographySisyphus{#{bib.global_id}} % take this line out on new report";
+    	bib_line = "\\BibliographySisyphus{#{bib.global_id}} % take this line out on a new report";
     	tex.insert_bib_line(bib_line)
     	tex.save(texfilename)
       #Scan.process_file(texfilename, verbose)
