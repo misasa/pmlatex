@@ -91,7 +91,8 @@ EOS
 EOS
       usage = usage.split("\n").map{|line| " "*4 + line}.join("\n")
 
-      example = <<-EOS Let's assume you have finished writing
+      example = <<-EOS 
+Let's assume you have finished writing
 `report.tex'.  You invoke `pmlatex add report'.  The program scans the
 document and picks title, date, and author, and create a new bib on
 Medusa.  At the same time, it inserts letters

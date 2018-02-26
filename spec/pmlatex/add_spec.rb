@@ -43,7 +43,7 @@ module Pmlatex
 				subject
 			}
 			it {
-			    expect(tex).to receive(:insert_bib_line).with("\\BibliographySisyphus{0000-001} % take this line out on new report")
+			    expect(tex).to receive(:insert_bib_line).with("\\BibliographySisyphus{0000-001} % take this line out on a new report")
 			    subject
 			}
 			it {
