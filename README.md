@@ -2,6 +2,10 @@
 
 Upload PDF file created by `pmlatex.sty` and `pdflatex` to Medusa
 
+# Description
+
+Upload PDF file created by `pmlatex.sty` and `pdflatex` to Medusa.
+
 # Dependency
 
 ## [medusa_rest_client](https://github.com/misasa/medusa_rest_client "follow instruction")
