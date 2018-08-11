@@ -4,7 +4,9 @@ Upload PDF file created by `pmlatex.sty` and `pdflatex` to Medusa
 
 # Description
 
-Upload PDF file created by `pmlatex.sty` and `pdflatex` to Medusa.  Create bib record in Medusa, then upload corresponding PDF file to the record.  Also replace PDF and update title, date, and author.
+Upload PDF file created by `pmlatex.sty` and `pdflatex` to Medusa.
+Create bib record in Medusa, then upload corresponding PDF file to the
+record.  Also replace PDF and update title, date, and author.
 
 # Dependency
 
