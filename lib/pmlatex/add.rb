@@ -71,7 +71,7 @@ EOS
     	tex.insert_bib_line(bib_line)
     	tex.save(texfilename)
       #Scan.process_file(texfilename, verbose)
-        print "hint:\n"
+        print "Hint:\n"
         print " latexmk report\n"
         print " reducepdf report\n"
         print " pmlatex commit report\n"

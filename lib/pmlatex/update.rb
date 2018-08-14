@@ -71,7 +71,7 @@ EOS
     		output = "The bibliography record <#{bib.global_id}> was updated to be #{bib.name} by #{bib_author_list} on #{bib.year}/#{bib.month}."
     		STDERR.puts output	
       end
-      print "hint:\n"
+      print "Hint:\n"
       print " latexmk report\n"
       print " reducepdf report\n"
       print " pmlatex commit report\n"

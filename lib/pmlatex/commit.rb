@@ -77,7 +77,7 @@ EOS
         svn_cmd = "svn commit -m #{@cmd_opts[:message]} #{fname}"
         system(svn_cmd)
       end
-      print "hint:\n"
+      print "Hint:\n"
       print " latexmk -c #{basename}\n"
       print " icp commit\n"
     end
