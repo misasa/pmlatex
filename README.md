@@ -1,4 +1,4 @@
-# pmlatex
+# gem package -- pmlatex
 
 Upload PDF file created by `pmlatex.sty` and `pdflatex` to Medusa
 
