@@ -15,17 +15,7 @@ record.  Also replace PDF and update title, date, and author.
 
 # Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'pmlatex'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+Install the package by yourself as:
 
     $ gem source -a http://dream.misasa.okayama-u.ac.jp/rubygems
     $ gem install pmlatex
