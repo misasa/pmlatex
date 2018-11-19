@@ -10,7 +10,7 @@ record.  Also replace PDF and update title, date, and author.
 
 # Dependency
 
-## [medusa_rest_client](https://github.com/misasa/medusa_rest_client "follow instruction")
+## [gem package -- medusa_rest_client](https://github.com/misasa/medusa_rest_client "follow instruction")
 
 
 # Installation
