@@ -24,12 +24,12 @@ Install the package by yourself as:
 
 Commands are summarized as:
 
-| command          | description                                   | note                       |
-|------------------|-----------------------------------------------|----------------------------|
-| pmlatex add      | create a bib record in Medusa                 |                            |
-| pmlatex commit   | upload pdffile to the bib record              |                            |
-| pmlatex update   | update title, date, and author of the record  |                            |
-| pmlatex scan     | correlate the bib record with stones          |                            |
+| command          | description                                    | note                       |
+|------------------|------------------------------------------------|----------------------------|
+| pmlatex add      | Create a bib record in Medusa.                 |                            |
+| pmlatex commit   | Upload pdffile to the bib record.              |                            |
+| pmlatex update   | Update title, date, and author of the record.  |                            |
+| pmlatex scan     | Correlate the bib record with stones.          |                            |
 
 # Usage
 
