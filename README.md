@@ -17,7 +17,7 @@ record.  Also replace PDF and update title, date, and author.
 
 Install the package by yourself as:
 
-    $ gem source -a http://dream.misasa.okayama-u.ac.jp/rubygems
+    $ gem source -a http://dream.misasa.okayama-u.ac.jp/rubygems/
     $ gem install pmlatex
 
 # Commands
