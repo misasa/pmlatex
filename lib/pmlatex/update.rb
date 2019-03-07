@@ -2,7 +2,7 @@ module Pmlatex
   class Update < Cui
     
     def cmd_options(argv=ARGV)
-      Trollop::options(argv) do
+      Optimist::options(argv) do
         # banner "  Usage: pmlatex update mylocalfile"
         banner <<EOS
 Usage: pmlatex update mylocalfile

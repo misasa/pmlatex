@@ -33,7 +33,7 @@ module Pmlatex
         when "scan"
           cui = Pmlatex::Scan.new(output, argv)
        else
-          Trollop::die "not implemented"  
+          Optimist::die "not implemented"  
         end
       return cui
     end
@@ -137,7 +137,7 @@ Copyright (C) 2015-2017 Okayama University
 License GPLv3+: GNU GPL version 3 or later
 EOS
       implementation = implementation.split("\n").map{|line| " "*4 + line}.join("\n")
-      Trollop::options(argv) do
+      Optimist::options(argv) do
       banner <<-EOS
 Usage: pmlatex [options] <subcommand>
 

@@ -2,7 +2,7 @@ module Pmlatex
   class Add < Cui
 
     def cmd_options(argv=ARGV)
-      Trollop::options(argv) do
+      Optimist::options(argv) do
         banner <<EOS
 Usage: pmlatex add mylocalfile
 See `pmlatex --help'

@@ -12,7 +12,7 @@ module Pmlatex
     # end
 
     def cmd_options(argv=ARGV)
-      Trollop::options(argv) do
+      Optimist::options(argv) do
         # banner "  Usage: pmlatex scan mylocalfile"
         banner <<EOS
 Usage: pmlatex scan mylocalfile

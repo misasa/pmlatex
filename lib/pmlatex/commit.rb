@@ -2,7 +2,7 @@ module Pmlatex
   class Commit < Cui
 
     def cmd_options(argv=ARGV)
-      Trollop::options(argv) do
+      Optimist::options(argv) do
         # banner "  Usage: pmlatex commit [options] mylocalfile"
         banner <<EOS
 Usage: pmlatex commit [options] mylocalfile

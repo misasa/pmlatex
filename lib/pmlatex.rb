@@ -10,7 +10,7 @@ require 'pmlatex/tex_log'
 require 'pmlatex/tex_helper'
 require 'pmlatex/overpic'
 require 'medusa_rest_client'
-require 'trollop'
+require 'optimist'
 require 'open3'
 class Util
   def self.cygpath(filepath, option = "m")
