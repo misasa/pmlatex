@@ -29,7 +29,7 @@ EOS
       raise "Error: An expected PDF-file <#{pdffilename}> was not found. Compile the source file <#{texfilename}> and have the PDF file <#{pdffilename}>. This message is generated" unless File.exist?(pdffilename);
       
       if verbose
-#        print "#{year}/#{mon}/#{mday}\n";
+        # print "#{year}/#{mon}/#{mday}\n";
       	print "basename: ", basename,"\n";
       	print "tex: ", texfilename,"\n";
       	print "pdf: ", pdffilename,"\n";
@@ -70,8 +70,9 @@ EOS
     	bib_line = "\\BibliographySisyphus{#{bib.global_id}} % take this line out on a new report";
     	tex.insert_bib_line(bib_line)
     	tex.save(texfilename)
-      #Scan.process_file(texfilename, verbose)
+        # Scan.process_file(texfilename, verbose)
         print "Hint:\n"
+        print " pmlatex scan report\n"
         print " latexmk report\n"
         print " reducepdf report\n"
         print " pmlatex commit report\n"

@@ -71,7 +71,7 @@ EOS
       raise "Error: An expected PDF-file <#{pdffilename}> was not found. Compile the source file <#{texfilename}> and have the PDF file <#{pdffilename}>. This message is generated" unless File.exist?(pdffilename);
       
       if verbose
-#        print "#{year}/#{mon}/#{mday}\n";
+        # print "#{year}/#{mon}/#{mday}\n";
       	print "basename: ", basename,"\n";
       	print "tex: ", texfilename,"\n";
       	print "pdf: ", pdffilename,"\n";
