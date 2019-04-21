@@ -41,10 +41,10 @@ EOS
 
     def self.check_cite(tex)
       ids = []
-      [tex.citeyearpars, tex.citeps, tex.cites].flatten.each do |cite|
+      [tex.citeyearpars, tex.citeps, tex.cites, tex.refdreams].flatten.each do |cite|
         begin
-    		  print "ID:#{cite}"
-    		  obj = MedusaRestClient::Record.find(cite)
+          print "ID:#{cite}"
+          obj = MedusaRestClient::Record.find(cite)
           print " OK\n"
           ids << cite if obj
         rescue => ex

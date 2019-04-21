@@ -1,6 +1,6 @@
 module Pmlatex
   class Tex
-    attr_accessor :filename, :src, :verbose, :bib_id, :title, :author, :authors, :year, :mon, :mday, :date, :citeyearpars, :citeps, :cites, :include_files
+    attr_accessor :filename, :src, :verbose, :bib_id, :title, :author, :authors, :year, :mon, :mday, :date, :citeyearpars, :citeps, :cites, :refdreams, :include_files
     def initialize(tex, verbose=false)
       @src = tex
       @verbose = verbose
@@ -75,6 +75,7 @@ module Pmlatex
       @citeyearpars = []
       @citeps = []
       @cites = []
+      @refdreams = []
       src.split("\n").each do |line|
         next if line.empty?
         next if line =~ /^\%/
@@ -82,6 +83,7 @@ module Pmlatex
         @citeyearpars.concat(line.scan(/\\cite[ya][a-z]+\{(.+?)\}/).flatten) # citeyearpar or citeauthor
         @citeps.concat(line.scan(/\\citep\{(.+?)\}/).flatten)
         @cites.concat(line.scan(/\\cite\{(.+?)\}/).flatten)
+        @refdreams.concat(line.scan(/\\refdream\{(.+?)\}/).flatten)
       end
       
     end

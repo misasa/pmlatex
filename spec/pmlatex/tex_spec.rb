@@ -59,6 +59,17 @@ OVZc-c \cite{20140808090748-453379} & OVZc-c-L1 \cite{20140808090814-129194} \\
         it { expect(tex.cites.size).to be_eql(2)}
       end
 
+      context "with refdream" do
+        let(:src){'
+OVZc-c \refdream{20140808090748-453379} & OVZc-c-L1 \refdream{20140808090814-129194} \\
+        '}
+        before do
+          tex.parse
+        end
+        it { expect(tex.refdreams.size).to be_eql(2)}
+      end
+
+
     end
     describe "#parse_author" do
       let(:tex) { Pmlatex::Tex.new(src) }

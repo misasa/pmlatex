@@ -36,7 +36,6 @@ module Pmlatex
           setup_file(include_file)
         end
 
-
         Dir.chdir('tmp')
         @tex_path = File.basename(@tex_path)
         cmd = "pdflatex #{File.basename(@tex_path)}"
@@ -62,9 +61,9 @@ module Pmlatex
         @cui.process_file(@tex_path)        
       end
 
-      # it "generate ss-file" do
-      #   expect(File.exists?(@ss_path)).to be_truthy
-      # end
+      #it "generate ss-file" do
+      #  expect(File.exists?(@ss_path)).to be_truthy
+      #end
 
       after(:each) do
       # @bib.destroy
