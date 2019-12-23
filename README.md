@@ -1,12 +1,13 @@
 # gem package -- pmlatex
 
-Upload PDF file created by `pmlatex.sty` and `pdflatex` to Medusa.
+Upload PDF file created with `pmlatex.sty` to App by Medusa.
 
 # Description
 
-Upload PDF file created by `pmlatex.sty` and `pdflatex` to Medusa.
-Create bib record in Medusa, then upload corresponding PDF file to the
-record.  Also replace PDF and update title, date, and author.
+Upload PDF file created with `pmlatex.sty` to App run by Medusa.
+Create bib record in App by Medusa, upload corresponding PDF file to
+App, and link them.  Also replace PDF file and update title, date, and
+author.
 
 # Dependency
 
