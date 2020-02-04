@@ -89,14 +89,14 @@ require 'pmlatex'
 
 # * SEE ALSO
 
-# series of Orochi utilities
 # icp
 # http://dream.misasa.okayama-u.ac.jp
+# https://github.com/misasa/pmlatex/blob/master/bin/pmlatex
 
 # * IMPLEMENTATION
 
 # Orochi, version 9
-# Copyright (C) 2015 Okayama University
+# Copyright (C) 2015-2020 Okayama University
 # License GPLv3+: GNU GPL version 3 or later
 # EOS
 # end
