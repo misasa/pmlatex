@@ -26,21 +26,37 @@ module Pmlatex
       end
     end
 
+    describe ".rcheck_cite", :current => true do
+      subject {Pmlatex::Scan.rcheck_cite(@ids, @tex)}
+      before do
+        @tex = double("tex")
+        @tex.stub(:include_files).and_return(['sub-1'])
+        allow(Pmlatex::Scan).to receive(:check_cite).and_return(@ids)
+        @ids = ["1","2","3"]
+      end
+      
+      it {
+        expect{ subject }.not_to raise_error
+      }
+    end
+
     describe "#process_file" do
       let(:bib){ FactoryGirl.build(:bib, id: 10) }
       before(:each) do
         @tex_path = 'tmp/template.tex'
-        @include_files = ['tmp/section1.tex', 'tmp/paragraph1.tex']
+        @pdf_path = 'tmp/template.pdf'
+        #@include_files = ['tmp/section1.tex', 'tmp/paragraph1.tex']
         setup_file(@tex_path)
-        @include_files.each do |include_file|
-          setup_file(include_file)
-        end
+        setup_file(@pdf_path)
+        #@include_files.each do |include_file|
+        #  setup_file(include_file)
+        #end
 
         Dir.chdir('tmp')
         @tex_path = File.basename(@tex_path)
-        cmd = "pdflatex #{File.basename(@tex_path)}"
-        system(cmd)
-        system(cmd)
+        #cmd = "pdflatex #{File.basename(@tex_path)}"
+        #system(cmd)
+        #system(cmd)
         
         #setup_file('tmp/template.pdf')
         @ss_path = 'tmp/template.ss'
@@ -64,10 +80,12 @@ module Pmlatex
       #it "generate ss-file" do
       #  expect(File.exists?(@ss_path)).to be_truthy
       #end
-
+      it "do something" do
+        expect(nil).to be_nil
+      end
       after(:each) do
       # @bib.destroy
-        FakeWeb.allow_net_connect = false
+      #  FakeWeb.allow_net_connect = false
       end   
 
     end

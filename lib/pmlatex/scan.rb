@@ -7,9 +7,9 @@ module Pmlatex
     #   @global_opts = global_opts
     # end
     
-    # def verbose
-    #   @global_opts[:verbose]
-    # end
+    def self.verbose
+       #@global_opts[:verbose]
+    end
 
     def cmd_options(argv=ARGV)
       Optimist::options(argv) do

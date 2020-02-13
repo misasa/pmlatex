@@ -18,14 +18,11 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "medusa_rest_client", "~> 0.1"
+  spec.add_dependency "optimist"
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.1"
-#  spec.add_development_dependency "turnip", "~> 1.2"
-
-  spec.add_dependency "medusa_rest_client", "~> 0.1"
-#  spec.add_dependency "trollop", "~> 2.1"
-  spec.add_dependency "optimist"
-  spec.add_development_dependency "simplecov-rcov", "~> 0.2.3"
-  spec.add_development_dependency "rspec_junit_formatter", "~> 0.2.0"
+#  spec.add_development_dependency "simplecov-rcov", "~> 0.2.3"
+#  spec.add_development_dependency "rspec_junit_formatter", "~> 0.2.0"
 end
