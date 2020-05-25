@@ -9,7 +9,7 @@ module Pmlatex
       setup_empty_dir('tmp')
     end
 
-    describe "parse_texlog", :current => true do
+    describe "parse_texlog" do
       subject { Scan.parse_texlog(log_path) }
       let(:log_path) { 'tmp/template.log' }
       before(:each) do
@@ -31,7 +31,7 @@ module Pmlatex
       before do
         @tex = double("tex")
         @tex.stub(:include_files).and_return(['sub-1'])
-        allow(Pmlatex::Scan).to receive(:check_cite).and_return(@ids)
+        allow(Pmlatex::Scan).to receive(:check_cite).and_return(["1", "2", "3"])
         @ids = ["1","2","3"]
       end
       

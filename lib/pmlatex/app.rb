@@ -183,7 +183,11 @@ EOS
     def verbose
       self.class.global_opts[:verbose]
     end
-   
+
+    def self.verbose
+      self.global_opts[:verbose]
+    end
+    
   end
 
 
