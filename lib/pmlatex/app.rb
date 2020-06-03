@@ -80,6 +80,11 @@ file.
 
 This program assists those complicated procedures.  Note that this
 program reads `~/.orochirc' for Medusa configuration.
+
+SEE ALSO
+    pmlatex
+    http://dream.misasa.okayama-u.ac.jp
+    https://github.com/misasa/pmlatex/blob/master/lib/pmlatex/app.rb
 EOS
       description = description.split("\n").map{|line| " "*4 + line}.join("\n")
 
