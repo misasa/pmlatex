@@ -6,6 +6,10 @@ module Pmlatex
         banner <<EOS
 Usage: pmlatex add mylocalfile
 See `pmlatex --help'
+SEE ALSO
+    pmlatex
+    http://dream.misasa.okayama-u.ac.jp
+    https://github.com/misasa/pmlatex/edit/master/lib/pmlatex/add.rb
 EOS
       end
     end
