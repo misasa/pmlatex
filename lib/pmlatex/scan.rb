@@ -13,6 +13,10 @@ module Pmlatex
         banner <<EOS
 Usage: pmlatex scan mylocalfile
 See `pmlatex --help'
+SEE ALSO
+    pmlatex
+    http://dream.misasa.okayama-u.ac.jp
+    https://github.com/misasa/pmlatex/blob/master/lib/pmlatex/scan.rb
 EOS
       end
     end
