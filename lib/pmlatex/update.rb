@@ -7,6 +7,10 @@ module Pmlatex
         banner <<EOS
 Usage: pmlatex update mylocalfile
 See `pmlatex --help'
+SEE ALSO
+    pmlatex
+    http://dream.misasa.okayama-u.ac.jp
+    https://github.com/misasa/pmlatex/blob/master/lib/pmlatex/update.rb
 EOS
       end
     end
