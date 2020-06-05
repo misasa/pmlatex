@@ -7,6 +7,10 @@ module Pmlatex
         banner <<EOS
 Usage: pmlatex commit [options] mylocalfile
 See `pmlatex --help'
+SEE ALSO
+    pmlatex
+    http://dream.misasa.okayama-u.ac.jp
+    https://github.com/misasa/pmlatex/blob/master/lib/pmlatex/commit.rb
 EOS
         opt :message, "specify log message", :type => :string
       end
