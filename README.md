@@ -11,6 +11,8 @@ author.
 
 # Dependency
 
+Ruby 2.5, 2.6, or 2.7.
+
 ## [gem package -- medusa_rest_client](https://github.com/misasa/medusa_rest_client "follow instruction")
 
 
