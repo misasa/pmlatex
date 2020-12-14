@@ -80,7 +80,7 @@ module Pmlatex
       #it "generate ss-file" do
       #  expect(File.exists?(@ss_path)).to be_truthy
       #end
-      it "do something" do
+      xit "do something" do
         expect(nil).to be_nil
       end
       after(:each) do
