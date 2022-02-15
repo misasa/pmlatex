@@ -23,6 +23,11 @@ Install the package by yourself as:
     $ gem source -a http://dream.misasa.okayama-u.ac.jp/rubygems/
     $ gem install pmlatex
 
+or install the package from github package registry as:
+    $ gem source -a https://rubygems.pkg.github.com/misasa
+    $ gem install pmlatex
+
+
 # Commands
 
 Commands are summarized as:
