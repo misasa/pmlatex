@@ -1,11 +1,12 @@
-name: Ruby Gem
+name: build + push gem
 
-#on:
-#  push:
-#    tags:
-#      - '*'
-
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+#on: workflow_dispatch
 
 jobs:
   build:
