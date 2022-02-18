@@ -24,6 +24,7 @@ Install the package by yourself as:
     $ gem install pmlatex
 
 or install the package from github package registry as:
+
     $ gem source -a https://rubygems.pkg.github.com/misasa
     $ gem install pmlatex
 
