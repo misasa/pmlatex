@@ -91,7 +91,11 @@ Development dependencies are bounded. The unsupported old HTTP gem source is
 replaced with HTTPS and scoped to `medusa_rest_client` in the Gemfile.
 Bundler may warn that the university server lacks a dependency API; its full
 index endpoint worked during local verification. Availability of that external
-server remains a build/install prerequisite.
+server remains a build/install prerequisite for local development and users.
+GitHub Actions runners cannot reach that server (bundle install times out), so
+the workflow sets `MEDUSA_REST_CLIENT_FROM_GITHUB=1`, and the Gemfile then takes
+`medusa_rest_client` from the public GitHub repository at a pinned tag instead.
+Update that tag in the Gemfile when the CI client version should change.
 
 The old lockfile described pmlatex 1.2.2 / medusa_rest_client 0.2.0 despite the
 baseline gemspec specifying 1.3.4 / ~> 1.0. It is removed from tracking and ignored;
