@@ -1,93 +1,88 @@
 require 'spec_helper'
 
-module Pmlatex
-  describe Scan do
-#   let(:output) { double('output').as_null_object }
-    before(:each) do
-#     FakeWeb.allow_net_connect = true
-#     setup_medusa
-      setup_empty_dir('tmp')
-    end
+RSpec.describe Pmlatex::Scan do
+  let(:bib) { double('remote bib', relatives: []) }
+  let(:stone_relatives) { [] }
+  let(:stone) { double('remote stone', relatives: stone_relatives) }
 
-    describe "parse_texlog" do
-      subject { Scan.parse_texlog(log_path) }
-      let(:log_path) { 'tmp/template.log' }
-      before(:each) do
-        setup_file(log_path)
-      end
+  before do
+    allow(MedusaRestClient::Record).to receive(:find).with('bib-1').and_return(bib)
+    allow(MedusaRestClient::Record).to receive(:find).with('stone-1').and_return(stone)
+  end
 
-#       it "does something" do
-#         expect(subject.include_files).to include("C:\\Users\\sisyphus\\xtreeml\\orochi\\tmp\\template.tex")
-# #       p log.include_files
-#       end
-      context "with no_such_file.log" do
-        let(:log_path) { 'tmp/no_such_file.log' }
-        it { expect(subject.include_files).to include("./report.tex") }
-      end
-    end
+  it 'recurses into actual included files and accumulates child IDs before parent IDs' do
+    File.write('child.tex', "\n\\cite{stone-1}\n")
+    tex = Pmlatex::Tex.new("\\input{child}\n\\cite{bib-1}\n")
+    tex.parse
+    expect(described_class.rcheck_cite([], tex)).to eq(%w[stone-1 bib-1])
+  end
 
-    describe ".rcheck_cite", :current => true do
-      subject {Pmlatex::Scan.rcheck_cite(@ids, @tex)}
-      before do
-        @tex = double("tex")
-        @tex.stub(:include_files).and_return(['sub-1'])
-        allow(Pmlatex::Scan).to receive(:check_cite).and_return(["1", "2", "3"])
-        @ids = ["1","2","3"]
-      end
-      
-      it {
-        expect{ subject }.not_to raise_error
-      }
-    end
+  it 'warns about a missing included file but still checks parent citations' do
+    tex = Pmlatex::Tex.new("\\input{absent}\n\\cite{stone-1}\n")
+    tex.parse
+    ids = nil
+    expect { ids = described_class.rcheck_cite([], tex) }.to output(/Warning/).to_stdout
+    expect(ids).to eq(['stone-1'])
+  end
 
-    describe "#process_file" do
-      let(:bib){ FactoryGirl.build(:bib, id: 10) }
-      before(:each) do
-        @tex_path = 'tmp/template.tex'
-        @pdf_path = 'tmp/template.pdf'
-        #@include_files = ['tmp/section1.tex', 'tmp/paragraph1.tex']
-        setup_file(@tex_path)
-        setup_file(@pdf_path)
-        #@include_files.each do |include_file|
-        #  setup_file(include_file)
-        #end
+  it 'omits failed remote lookups and retains successful citations' do
+    allow(MedusaRestClient::Record).to receive(:find).with('missing').and_raise(StandardError, 'not found')
+    tex = Pmlatex::Tex.new('\\cite{missing} \\citep{stone-1}')
+    tex.parse
+    expect(described_class.check_cite(tex)).to eq(['stone-1'])
+  end
 
-        Dir.chdir('tmp')
-        @tex_path = File.basename(@tex_path)
-        #cmd = "pdflatex #{File.basename(@tex_path)}"
-        #system(cmd)
-        #system(cmd)
-        
-        #setup_file('tmp/template.pdf')
-        @ss_path = 'tmp/template.ss'
-        @back_tex_path = @tex_path + '.backup'
-        @copy_tex_path = @tex_path + '.copy'
-        @ss_path = File.basename(@tex_path,".tex") + '.ss'
-        @cui = Pmlatex::Add.new(myout, [@tex_path])
-        @cui.process_file(@tex_path)
-        @tex = Tex.from_file(@tex_path)
-        @bib = MedusaRestClient::Record.find(@tex.bib_id)
-        # setup_medusa
-        # setup_file('tmp/template-with-id.tex')
-        # setup_file('tmp/template-with-id.pdf')        
-        # @tex_path = 'tmp/template-with-id.tex'
-        # @ss_path = 'tmp/template-with-id.ss'
-        # @tex = Tex.from_file(@tex_path)
-        @cui = Pmlatex::Scan.new(myout, [@tex_path])
-        @cui.process_file(@tex_path)        
-      end
+  it 'links unique citations, preserves the input and writes the complete ss command file' do
+    source = document + "\\cite{stone-1} \\cite{stone-1}\n"
+    write_report(source)
+    described_class.process_file('report.tex')
+    expect(stone_relatives).to eq([bib])
+    expect(File.read('report.ss')).to eq("bib-1\nparent\nstone-1\nchildren -y\n")
+    expect(File.read('report.tex')).to eq(source)
+  end
 
-      #it "generate ss-file" do
-      #  expect(File.exists?(@ss_path)).to be_truthy
-      #end
-      xit "do something" do
-        expect(nil).to be_nil
-      end
-      after(:each) do
-      # @bib.destroy
-      #  FakeWeb.allow_net_connect = false
-      end   
+  it 'includes citations discovered only through the TeX log' do
+    write_report
+    File.write('report.log', '(./extra.tex)')
+    File.write('extra.tex', '\\refdream{stone-1}')
+    described_class.process_file('report.tex')
+    expect(stone_relatives).to eq([bib])
+    expect(File.read('report.ss')).to eq("bib-1\nparent\nstone-1\nchildren -y\n")
+  end
 
+  it 'does not relink existing relatives but still exports their IDs' do
+    write_report(document + '\\cite{stone-1}')
+    allow(bib).to receive(:relatives).and_return([double('linked relative', global_id: 'stone-1')])
+    described_class.process_file('report.tex')
+    expect(stone_relatives).to be_empty
+    expect(File.read('report.ss')).to include("stone-1\n")
+  end
+
+  it 'does not write an ss file when no citations resolve' do
+    write_report
+    described_class.process_file('report.tex')
+    expect(File.exist?('report.ss')).to be(false)
+  end
+
+  it 'reports a missing remote bibliography and does not write an ss file' do
+    write_report
+    allow(MedusaRestClient::Record).to receive(:find).with('bib-1').and_raise(StandardError, 'not found')
+    expect { described_class.process_file('report.tex') }.to raise_error(/not found on database/)
+    expect(File.exist?('report.ss')).to be(false)
+  end
+
+  it 'rejects a missing bibliography ID before a remote lookup' do
+    write_report(document(bib_id: nil))
+    expect(MedusaRestClient::Record).not_to receive(:find)
+    expect { described_class.process_file('report.tex') }.to raise_error(/BibliographySisyphus/)
+  end
+
+  %w[report.tex report.pdf].each do |missing|
+    it "rejects missing #{missing} before a remote lookup" do
+      write_report
+      File.delete(missing)
+      expect(MedusaRestClient::Record).not_to receive(:find)
+      expect { described_class.process_file('report.tex') }.to raise_error(/not found/)
     end
   end
 end

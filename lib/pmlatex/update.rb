@@ -5,8 +5,23 @@ module Pmlatex
       Optimist::options(argv) do
         # banner "  Usage: pmlatex update mylocalfile"
         banner <<EOS
-Usage: pmlatex update mylocalfile
-See `pmlatex --help'
+Usage: pmlatex update [options] DOCUMENT[.tex]
+
+Update the title, authors, year, and month of the Medusa bibliography
+record identified in DOCUMENT.tex. Both DOCUMENT.tex and DOCUMENT.pdf
+must already exist, and the source must contain a BibliographySisyphus ID.
+
+If the metadata matches, no confirmation or save is needed. Otherwise,
+review the proposed changes and enter y (or an empty reply) to save them.
+Enter n to leave the bibliography record unchanged. Author records may
+be created while preparing the proposed update, before confirmation.
+
+This command does not modify the source or upload the PDF.
+
+Example:
+  pmlatex update report
+
+See pmlatex --help for the complete workflow.
 EOS
       end
     end

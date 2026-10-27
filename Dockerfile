@@ -1,9 +1,7 @@
-FROM ruby:2.7
-RUN gem install bundler
+# Optional development image. Not a verified CI environment.
+FROM ruby:4.0.9
 WORKDIR /usr/src/app
-#COPy ./data/dotorochirc /root/.orochirc
 COPY . .
-RUN bundle install
-RUN rm -r pkg | bundle exec rake build pmlatex.gemspec
-RUN gem install pkg/pmlatex-*.gem
-#CMD ["/bin/bash"]
+RUN bundle install && bundle exec rake verify
+ENTRYPOINT ["bundle", "exec", "pmlatex"]
+CMD ["--help"]

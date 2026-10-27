@@ -11,8 +11,27 @@ module Pmlatex
       Optimist::options(argv) do
         # banner "  Usage: pmlatex scan mylocalfile"
         banner <<EOS
-Usage: pmlatex scan mylocalfile
-See `pmlatex --help'
+Usage: pmlatex scan [options] DOCUMENT[.tex]
+
+Link cited Medusa records to the bibliography record identified in
+DOCUMENT.tex. Both DOCUMENT.tex and DOCUMENT.pdf must already exist,
+and the source must contain a BibliographySisyphus ID.
+
+Read citation IDs from the source, recursively included files, and
+TeX source paths found in DOCUMENT.log when that log exists. Run from
+the document directory so included files can be found.
+
+If any citation IDs resolve, write them to DOCUMENT.ss. Existing links
+are not added again. If none resolve, no new ss file is written and
+an existing ss file is left unchanged. The source and PDF are unchanged.
+
+Missing includes and failed citation lookups or links may be reported
+and skipped; a successful exit does not confirm that every link exists.
+
+Example:
+  pmlatex scan report
+
+See pmlatex --help for the complete workflow.
 EOS
       end
     end
@@ -94,7 +113,7 @@ EOS
       #   check_cite(cite)
       # end      
       rcheck_cite(ids, tex)
-      if File.exists?(logfilename)
+      if File.exist?(logfilename)
         log = parse_texlog(logfilename)
         log.include_files.each do |include_filename|
           p "#{include_filename} is parsing..."

@@ -12,3 +12,7 @@
 *.a
 mkmf.log
 /vendor/
+/Gemfile.lock
+/.superpowers/
+
+.orochirc

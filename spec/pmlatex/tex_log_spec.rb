@@ -1,48 +1,26 @@
 require 'spec_helper'
-module Pmlatex
-  describe TexLog do
 
-    describe ".scan_tex_path", :current => true do
-      subject { TexLog.scan_tex_path(src) }
-      context "with log" do
-        let(:log_path) { 'tmp/no_such_file.log' }
-        let(:src){ File.open(log_path).read }
-        before(:each) do
-          setup_empty_dir('tmp')
-          setup_file(log_path)
-        end
+RSpec.describe Pmlatex::TexLog do
+  it 'extracts and deduplicates paths in first-seen order from synthetic log text' do
+    source = '(./report.tex (./mount/figure0.tex) (./mount/origin.tex) (./report.tex)'
+    expect(described_class.scan_tex_path(source)).to eq(%w[./report.tex ./mount/figure0.tex ./mount/origin.tex])
+  end
 
-        it { expect(subject).to include("./report.tex")}
-        it { expect(subject).to include("./mount/figure0.tex")}
-        it { expect(subject).to include("./mount/origin.tex")}
-      end
+  it 'reads the historical log fixture using the real file parser' do
+    paths = described_class.from_file(fixture('no_such_file.log')).include_files
+    expect(paths).to include('./report.tex', './mount/figure0.tex', './mount/origin.tex')
+    expect(paths).to eq(paths.uniq)
+  end
 
-      context "with empty src" do
-        let(:src){ "" }
+  it 'returns no paths for empty text' do
+    expect(described_class.scan_tex_path('')).to eq([])
+  end
 
-        it { expect(subject).to eql([])}
-      end
+  it 'retains the nil input boundary' do
+    expect(described_class.scan_tex_path(nil)).to be_nil
+  end
 
-      context "with nil src" do
-        let(:src){ nil }
-
-        it { expect(subject).to be_nil }
-      end
-
-    end
-
-    describe "parse_texlog" do
-      subject { TexLog.from_file(log_path) }
-      let(:log_path) { 'tmp/no_such_file.log' }
-      before(:each) do
-        setup_empty_dir('tmp')
-        setup_file(log_path)
-      end
-
-      it "does something" do
-        expect(subject.include_files).to include("./report.tex")
-      end
-    end
-
+  it 'fails for a missing log instead of treating it as an empty log' do
+    expect { described_class.from_file('absent.log') }.to raise_error(Errno::ENOENT)
   end
 end
