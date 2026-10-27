@@ -4,8 +4,22 @@ module Pmlatex
     def cmd_options(argv=ARGV)
       Optimist::options(argv) do
         banner <<EOS
-Usage: pmlatex add mylocalfile
-See `pmlatex --help'
+Usage: pmlatex add [options] DOCUMENT[.tex]
+
+Create a Medusa bibliography record from the document's title, authors,
+and date. Both DOCUMENT.tex and DOCUMENT.pdf must already exist.
+The source must not already contain a BibliographySisyphus ID.
+
+Save the original source as DOCUMENT.tex.backup and insert the new
+record ID into DOCUMENT.tex. An existing backup is overwritten.
+This command does not upload the PDF or link cited records.
+
+Recompile the source after adding its ID, then run scan and commit.
+
+Example:
+  pmlatex add report
+
+See pmlatex --help for the complete workflow.
 EOS
       end
     end

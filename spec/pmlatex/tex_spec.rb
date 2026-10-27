@@ -1,101 +1,80 @@
 require 'spec_helper'
 
-module Pmlatex
-  describe Tex do
-    before(:each) do
-      setup_empty_dir('tmp')
+RSpec.describe Pmlatex::Tex do
+  it 'reads the historical report title, ID, author and include paths' do
+    tex = described_class.from_file(fixture('yamanaka_report.tex'))
+    expect(tex.title).to eq('A possible target for MISIP-2015')
+    expect(tex.bib_id).to eq('20150413140738-506731')
+    expect(tex.author_fullnames).to eq(['PML'])
+    expect(tex.include_files).to include('tables/stone_list0', 'tables/status0')
+  end
+
+  it 'parses a fixed date without depending on the current day' do
+    tex = described_class.new(document)
+    tex.parse
+    expect([tex.year, tex.mon, tex.mday]).to eq([2014, 4, 5])
+    expect(tex.title).to eq('Example report')
+    expect(tex.bib_id).to eq('bib-1')
+  end
+
+  it 'preserves exact citation IDs, order and command categories, excluding full-line comments' do
+    tex = described_class.new(<<~'TEX')
+      \citeyearpar{year-1} \citeauthor{author-1}
+      \citep{parenthetical-1} \citep{parenthetical-2}
+      \cite{plain-1} \refdream{dream-1}
+      % \cite{ignored} \input{ignored}
+      \input{section}
+      \include{appendix}
+    TEX
+    tex.parse
+    expect(tex.citeyearpars).to eq(%w[year-1 author-1])
+    expect(tex.citeps).to eq(%w[parenthetical-1 parenthetical-2])
+    expect(tex.cites).to eq(['plain-1'])
+    expect(tex.refdreams).to eq(['dream-1'])
+    # One include/input per line is the existing parser's supported shape.
+    expect(tex.include_files).to eq(['section', 'appendix'])
+  end
+
+  {
+    'Nakamura, E.' => ['Nakamura, E.'],
+    'YS and TK' => ['YS', 'TK'],
+    'Nakamura, E., Makishima, A., and Yachi, Y.' => ['Nakamura, E.', 'Makishima, A.', 'Yachi, Y.'],
+    'Last1, A. B., First1 Jr. Last1, Yusuke Yachi, and Last2, D.' => ['Last1, A. B.', 'Last1, First1 Jr.', 'Yachi, Yusuke', 'Last2, D.']
+  }.each do |author, expected|
+    it "parses all authors in #{author.inspect}" do
+      tex = described_class.new(document(author: author))
+      expect(tex.author_fullnames).to eq(expected)
     end
+  end
 
-    describe "from_file", :current => true do
-      before(:each) do
-        setup_file('tmp/yamanaka_report.tex')
-        @tex_path = 'tmp/yamanaka_report.tex'
-      end
-
-      it "does something" do
-        tex = Tex.from_file(@tex_path)
-      end
+  {
+    "\\begin{document}\n\\maketitle\n% FILEPATH START\nbody" => "\\begin{document}\n\\maketitle\nID\n% FILEPATH START\nbody",
+    "\\begin{document}\n\\maketitle\nbody" => "\\begin{document}\n\\maketitle\nID\nbody",
+    "header\n\\begin{document}\nbody" => "header\n\\begin{document}\nID\nbody"
+  }.each_with_index do |(source, expected), index|
+    it "inserts the ID at priority position #{index + 1} and saves the full source" do
+      tex = described_class.new(source)
+      tex.insert_bib_line('ID')
+      tex.save('result.tex')
+      expect(File.read('result.tex')).to eq(expected + "\n")
     end
+  end
 
+  it 'rejects insertion without an anchor and leaves the source intact' do
+    tex = described_class.new('unanchored text')
+    expect { tex.insert_bib_line('ID') }.to raise_error(/Could not find/)
+    expect(tex.src).to eq('unanchored text')
+  end
 
-    describe "#parse" do
-      let(:tex) { Pmlatex::Tex.new(src) }
-      context "with author" do
-        let(:author_tag) {'Yachi, Y.'}      
-        let(:src) { "\n\\author{#{author_tag}}"}
-        before do
-          tex.parse
-        end
-        it { expect( tex.author ).to eql(author_tag)}
-      end
+  it 'characterizes metadata at the first byte as currently unrecognized' do
+    tex = described_class.new("\\title{first line}\n")
+    tex.parse
+    expect(tex.title).to be_nil
+  end
 
-      context "with citeyearpar" do
-        let(:src){'
-OVZc-c \citeyearpar{20140808090748-453379} & OVZc-c-L1 \citeyearpar{20140808090814-129194} \\
-        '}
-        before do
-          tex.parse
-        end
-        it { expect(tex.citeyearpars.size).to be_eql(2)}
-      end
-
-      context "with citep" do
-        let(:src){'
-OVZc-c \citep{20140808090748-453379} & OVZc-c-L1 \citep{20140808090814-129194} \\
-        '}
-        before do
-          tex.parse
-        end
-        it { expect(tex.citeps.size).to be_eql(2)}
-      end
-
-      context "with cite" do
-        let(:src){'
-OVZc-c \cite{20140808090748-453379} & OVZc-c-L1 \cite{20140808090814-129194} \\
-        '}
-        before do
-          tex.parse
-        end
-        it { expect(tex.cites.size).to be_eql(2)}
-      end
-
-      context "with refdream" do
-        let(:src){'
-OVZc-c \refdream{20140808090748-453379} & OVZc-c-L1 \refdream{20140808090814-129194} \\
-        '}
-        before do
-          tex.parse
-        end
-        it { expect(tex.refdreams.size).to be_eql(2)}
-      end
-
-
-    end
-    describe "#parse_author" do
-      let(:tex) { Pmlatex::Tex.new(src) }
-      let(:src) { 'hello tex'}
-      before do
-        tex.author = author
-        tex.parse_author
-      end
-      context "Last1, Y." do
-        let(:author){'Nakamura, E.'}
-        it { expect(tex.authors).to include({:lastname => 'Nakamura', :firstname => 'E.'})}
-      end
-      context "YS and TK" do
-        let(:author){'YS and TK'}
-        it { expect(tex.authors).to include({:lastname => 'YS'})}
-      end
-      context "Last1, A., Last2, B., and Last3, C." do
-        let(:author){'Nakamura, E., Makishima, A., Moriguti, T., Kobayashi, K., Tanaka, R., Kunihiro, T., Tsujimori, T., Sakaguchi, C., Kitagawa, H., Ota, T., Yachi, Y., Yada, T., Abe, M., Fujimura, A., Ueno, M., Mukai, T., Yoshikawa, M., and Kawaguchi, J.'}
-        it { expect( tex.authors ).to include({:lastname => 'Nakamura', :firstname => 'E.'}) }
-      end
-      context "Last1, A. B., Last2, B., and Last3, C." do
-        let(:author){'Last1, A. B., First1 Jr. Last1, Yusuke Yachi, Tak Kunihiro, and Last2, D.'}
-        it { expect( tex.authors ).to include({:lastname => 'Yachi', :firstname => 'Yusuke'}) }
-        it { expect( tex.author_fullnames ).to include('Last1, A. B.')}
-      end
-
-    end
+  it 'characterizes comma-separated citation keys as one unsplit lookup ID' do
+    tex = described_class.new('\\cite{one,two}')
+    tex.parse
+    expect(tex.cites).to eq(['one,two'])
   end
 end

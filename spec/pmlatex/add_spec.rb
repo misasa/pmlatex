@@ -1,84 +1,51 @@
 require 'spec_helper'
-require 'medusa_rest_client'
-module Pmlatex
-  describe Add do
-#   let(:output) { double('output').as_null_object }
-    before(:each) do
-#     setup_medusa
-      #@tmp_path = File.expand_path('../../../tmp',__FILE__)
-#     FakeWeb.allow_net_connect = true
-#     setup_medusa
-      setup_empty_dir('tmp')
+
+RSpec.describe Pmlatex::Add do
+  let(:author) { double('remote author', id: 7) }
+  let(:bib) do
+    # State belongs to the remote boundary; actual parsing, backup and save stay real.
+    Struct.new(:name, :entry_type, :author_ids, :journal, :year, :volume, :month, :pages, :global_id) do
+      def save; end
+      def reload; end
+    end.new.tap do |record|
+      record.global_id = 'created-1'
     end
+  end
 
-    describe "#process_file" do
-      subject { cui.process_file(tex_path) }
-      let(:cui) { Pmlatex::Add.new(myout, args) }
-      let(:tex_path) { 'tmp/template.tex' }
-      let(:pdf_path) { 'tmp/template.pdf'}
-      let(:args){ [tex_path]}
-      let(:tex) { double("tex", :author_fullnames => author_names).as_null_object }
-      let(:author) { double("author").as_null_object }
-      let(:author_names) { ['Yusuke Yachi'] }
-      let(:bib){ double("bib", :global_id => "0000-001").as_null_object}
-      before do
-        setup_file(tex_path)
-        setup_file(pdf_path)
-        #bib = double("bib", :id => 2).as_null_object
-        #tex = double("tex")
-        allow(tex).to receive(:bib_id).and_return(nil)
-        allow(Tex).to receive(:from_file).and_return(tex)
-        allow(MedusaRestClient::Author).to receive(:find_or_create_by_name).and_return(author)
-        allow(MedusaRestClient::Bib).to receive(:new).and_return(bib)
-        allow(Scan).to receive(:process_file)
-      end
+  before do
+    allow(MedusaRestClient::Author).to receive(:find_or_create_by_name).with('Yachi, Yusuke').and_return(author)
+    allow(MedusaRestClient::Bib).to receive(:new).and_return(bib)
+    allow(bib).to receive(:save)
+    allow(bib).to receive(:reload)
+  end
 
-      it {
-        expect(Tex).to receive(:from_file).with(tex_path, false).and_return(tex)
-        subject
-      }
+  it 'creates metadata, backs up the original source, and embeds the server ID' do
+    original = document(bib_id: nil)
+    write_report(original)
+    expect(Pmlatex::Scan).not_to receive(:process_file)
+    expect { command(described_class).process_file('report.tex') }.to output(/Hint/).to_stdout
+    expect([bib.name, bib.entry_type, bib.author_ids, bib.journal, bib.year, bib.volume, bib.month, bib.pages]).to eq(
+      ['Example report', 'article', [7], 'DREAM Digital Document', 2014, 14, 4, 'created-1'])
+    expect(bib).to have_received(:save).twice
+    expect(bib).to have_received(:reload).twice
+    expect(File.read('report.tex.backup')).to eq(original)
+    expected = original.sub("\\maketitle\n", "\\maketitle\n\\BibliographySisyphus{created-1} % take this line out on a new report\n")
+    expect(File.read('report.tex')).to eq(expected)
+  end
 
-      it {
-        expect(MedusaRestClient::Author).to receive(:find_or_create_by_name).and_return(author)
-        subject
-      }
-      it {
-          expect(tex).to receive(:insert_bib_line).with("\\BibliographySisyphus{0000-001} % take this line out on a new report")
-          subject
-      }
-      it {
-          expect(tex).to receive(:save).with(tex_path)
-          subject
-        }
+  it 'refuses an already paired document before creating a remote record' do
+    write_report
+    expect(MedusaRestClient::Bib).not_to receive(:new)
+    expect { command(described_class).process_file('report.tex') }.to raise_error(/already paired/)
+    expect(File.exist?('report.tex.backup')).to be(false)
+  end
 
-        it {
-          expect(Scan).not_to receive(:process_file).with(tex_path, false)
-          subject
-        }
-
+  %w[report.tex report.pdf].each do |missing|
+    it "rejects missing #{missing} before remote author creation" do
+      write_report(document(bib_id: nil))
+      File.delete(missing)
+      expect(MedusaRestClient::Author).not_to receive(:find_or_create_by_name)
+      expect { command(described_class).process_file('report.tex') }.to raise_error(/not found/)
     end
-
-    # describe "#process_file" do
-    #   before(:each) do
-    #     setup_file('tmp/template.tex')
-    #     setup_file('tmp/template.pdf')        
-    #     @tex_path = 'tmp/template.tex'
-    #     @back_tex_path = @tex_path + '.backup'
-    #     @cui = Pmlatex::Add.new(myout, [@tex_path])
-    #     @cui.process_file(@tex_path)
-    #     @tex = Tex.from_file(@tex_path)
-    #     @bib = MedusaRestClient::Record.find(@tex.bib_id)
-    #   end
-
-    #   it { expect(@tex.bib_id).not_to be_nil }
-    #   it { expect(@bib.name).to eq(@tex.title) }
-    #   it "backup original tex-file" do
-    #     expect(File.exists?(@back_tex_path)).to be_truthy
-    #   end
-    # end
-    # after(:each) do
-    #   @bib.destroy
-    #   FakeWeb.allow_net_connect = false
-    # end
   end
 end

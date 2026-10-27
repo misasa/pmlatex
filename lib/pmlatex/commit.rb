@@ -5,10 +5,26 @@ module Pmlatex
       Optimist::options(argv) do
         # banner "  Usage: pmlatex commit [options] mylocalfile"
         banner <<EOS
-Usage: pmlatex commit [options] mylocalfile
-See `pmlatex --help'
+Usage: pmlatex commit [options] DOCUMENT[.tex]
+
+Upload DOCUMENT.pdf to the bibliography record identified in DOCUMENT.tex.
+Both files must already exist. Run pmlatex add first if the source does
+not contain a BibliographySisyphus ID, then recompile the source.
+
+If an attachment has the same filename, choose y (or an empty reply)
+to replace it, n to cancel, or append to keep it and upload another.
+Replacement deletes the old attachment before uploading the new PDF.
+
+The --message option also runs svn commit on the supplied document path
+after uploading. Omit it if no SVN commit is needed.
+
+Examples:
+  pmlatex commit report
+  pmlatex commit --message revision report.tex
+
+See pmlatex --help for the complete workflow.
 EOS
-        opt :message, "specify log message", :type => :string
+        opt :message, "Also commit the supplied document path to SVN with this log message", :type => :string
       end
     end
 

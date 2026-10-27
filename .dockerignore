@@ -1,0 +1,9 @@
+.git
+.bundle
+.superpowers
+vendor
+pkg
+tmp
+Gemfile.lock
+
+.orochirc

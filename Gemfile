@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
-source 'http://dream.misasa.okayama-u.ac.jp/rubygems/'
 
-# Specify your gem's dependencies in pmlatex.gemspec
+# The Medusa client is distributed by the university, over HTTPS.
+source 'https://dream.misasa.okayama-u.ac.jp/rubygems/' do
+  gem 'medusa_rest_client', '~> 1.0'
+end
+
 gemspec

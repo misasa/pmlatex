@@ -43,98 +43,96 @@ module Pmlatex
       sub_commands = %w(add commit update scan)
 
       name = <<-EOS
-pmlatex -- upload PDF file created by `pmlatex.sty' and `pdflatex' to
-Medusa.
+pmlatex -- manage LaTeX documents and PDF attachments in Medusa.
 EOS
       name = name.split("\n").map{|line| " "*4 + line}.join("\n")
 
       history = <<-EOS
-August 1, 2017: Update document with gem version 1.0.2
-June 26, 2015: gem version 0.0.1 released
+August 1, 2017: Documentation updated for gem version 1.0.2.
+June 26, 2015: Gem version 0.0.1 released.
 April 5, 2015: First release with documentation.
 EOS
       history = history.split("\n").map{|line| " "*4 + line}.join("\n")
 
       synopsis = <<-EOS
-Create bib record in Medusa, then upload corresponding PDF file to the
-record.  Also replace PDF and update title, date, and author.
+Create and update Medusa bibliography records, upload their PDFs,
+and link records cited by LaTeX documents.
 EOS
       synopsis = synopsis.split("\n").map{|line| " "*4 + line}.join("\n")
 
       description = <<-EOS
-The standard format of DREAM documentation as of April 5 (2015) is PDF
-create by combination of `pmlatex.sty' and `pdflatex'.  This program
-helps to upload and re-upload the PDF file.  This program has four
-sub-command, that are add, commit, update, and scan.
+Use documents prepared with pmlatex.sty and an existing TeX toolchain.
+This program does not compile LaTeX or generate PDF files.
 
-Whenever you finish writing document the first time, you need four
-steps; (1) create a bib record in Medusa with appropriate title, date,
-and author, (2) embed Medusa-ID into the LaTeX document and recompile
-it, (3) upload the PDF file to the bib record, and (4) correlate the
-bib record with stones shown up on the document.
+Available commands:
+  add     Create a bibliography record and insert its ID into the source.
+  commit  Upload the PDF to the document's bibliography record.
+  update  Update the record's title, authors, year, and month.
+  scan    Link cited Medusa records to the bibliography record.
 
-On revision the document, you need three steps; (1) remove PDF file
-that is correlated with the bib record, (2) update title, date, and
-author of the record when necessary, and (3) upload the newest PDF
-file.
+All four commands require both the LaTeX source and its compiled PDF.
+Pass the document basename, a .tex path, or a .pdf path. For example,
+report, report.tex, and report.pdf select report.tex and report.pdf.
+Run from the document directory so included files can be found.
 
-This program assists those complicated procedures.  Note that this
-program reads `~/.orochirc' for Medusa configuration.
+For a new document, create the record with add, recompile the source
+after its ID is inserted, then run scan and commit. For revisions,
+compile the latest PDF and run commit; use update if metadata changed.
+
+The Medusa client reads .orochirc in the current directory first,
+then ~/.orochirc. It loads configuration even when displaying help.
 EOS
       description = description.split("\n").map{|line| " "*4 + line}.join("\n")
 
       usage = <<-EOS
- pmlatex add document[.tex]
- pmlatex commit document[.tex]
- pmlatex update document[.tex]
- pmlatex scan document[.tex]
+pmlatex [--verbose] add DOCUMENT[.tex]
+pmlatex [--verbose] commit [--message MESSAGE] DOCUMENT[.tex]
+pmlatex [--verbose] update DOCUMENT[.tex]
+pmlatex [--verbose] scan DOCUMENT[.tex]
 EOS
       usage = usage.split("\n").map{|line| " "*4 + line}.join("\n")
 
       example = <<-EOS 
-Let's assume you have finished writing
-`report.tex'.  You invoke `pmlatex add report'.  The program scans the
-document and picks title, date, and author, and create a new bib on
-Medusa.  At the same time, it inserts letters
-`\BibliographySisyphus{20140806114754-746408}' into `report.tex'.  You
-recompile `report.tex'.  You will correlate the bib record and stones,
-boxes, and analyses shown up on the document.  Hereafter, only stones
-are inferred for simple explanation.  You invoke `pmlatex scan
-report'.  The program scans the document, picks stones, and correlate
-the bib record to the stones.  It also exports stones to `report.ss'.
-By handling the `report.ss' appropriately, you re-correlate the bib
-record and the stones.  Then you invoke `pmlatex commit report' to
-upload the PDF file to the bib record.  The commands you invoked on
-this scene are summarized as below.
+Register a new document and upload its PDF:
 
- $ pmlatex add report
- $ pdflatex report
- $ pmlatex scan report
- $ pmlatex commit report
+  pdflatex report          # Create the PDF required by add.
+  pmlatex add report       # Back up the source and insert the new ID.
+  pdflatex report          # Recompile the source with its new ID.
+  pmlatex scan report      # Link records cited by the document.
+  pmlatex commit report    # Upload report.pdf.
 
-Whenever you revise `report.tex' and have the up-to-date `report.pdf',
-you want to replace `report.pdf' on Medusa by the newest PDF.  You
-invoke `pmlatex commit report' to do so.  You may want to update
-title, author, and date on the bib record.  You invoke `pmlatex update
-report' to do so.  The commands you invoked on this scene are
-summarized as below.
+The add command inserts a line such as \\BibliographySisyphus{ID}
+into report.tex and saves the original source as report.tex.backup.
+The scan command writes report.ss when any cited records resolve.
 
- $ pmlatex commit report
- $ pmlatex update report
+Upload a revised PDF and update changed bibliography metadata:
+
+  pdflatex report
+  pmlatex commit report
+  pmlatex update report
+
+When commit finds an attachment with the same filename, it prompts
+to replace it, cancel the upload, or append another attachment.
+An empty reply means replace. The update command also prompts before
+saving changed metadata; an empty reply means yes.
+
+For command-specific help, run pmlatex COMMAND --help.
 EOS
       example = example.split("\n").map{|line| " "*4 + line}.join("\n")
 
       see_also = <<-EOS
-series of Orochi utilities
-icp
-http://dream.misasa.okayama-u.ac.jp
+pmlatex add --help
+pmlatex commit --help
+pmlatex update --help
+pmlatex scan --help
+https://github.com/misasa/pmlatex
 EOS
       see_also = see_also.split("\n").map{|line| " "*4 + line}.join("\n")
 
       implementation = <<-EOS
-Orochi, version 9
+pmlatex
 Copyright (C) 2015-2020 Okayama University
-License GPLv3+: GNU GPL version 3 or later
+License: GNU General Public License version 3 or later (GPL-3.0-or-later)
 EOS
       implementation = implementation.split("\n").map{|line| " "*4 + line}.join("\n")
       Optimist::options(argv) do
@@ -159,7 +157,7 @@ Usage: pmlatex [options] <subcommand>
   Usage:
 #{usage}
 
-  Example:
+  Examples:
 #{example}
 
   See also:
@@ -170,7 +168,7 @@ Usage: pmlatex [options] <subcommand>
 
   Global options:
 EOS
-        opt :verbose, "Run verbosely"
+        opt :verbose, "Show additional diagnostic output"
     #  opt :dry_run, "Don't actually do anything", :short => "-n"
         stop_on sub_commands
       end
