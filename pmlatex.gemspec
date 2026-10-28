@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.description   = 'Create and update Medusa bibliography records, upload their PDFs, and link cited records from pmlatex documents.'
   spec.homepage      = 'https://github.com/misasa/pmlatex'
   spec.license       = 'GPL-3.0-or-later'
-  spec.required_ruby_version = '>= 2.6.10'
+  spec.required_ruby_version = '>= 2.6.0'
 
   spec.files         = %w[LICENSE.txt README.md bin/pmlatex] + Dir['lib/**/*.rb'].sort
   spec.executables   = ['pmlatex']

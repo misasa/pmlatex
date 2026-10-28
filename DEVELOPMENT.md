@@ -1,5 +1,132 @@
 # Development and regression verification
 
+## Ruby minimum requirement correction for 1.3.5
+
+The installation requirement is **Ruby >= 2.6.0**. Commit `8312451`
+(2026-10-27, preparation of 1.3.5) introduced `>= 2.6.10` alongside tests and
+documentation tied to the tested Mac interpreter. That conflated the verification
+target with the minimum installation requirement. This correction follows
+[scalebar PR #7](https://github.com/misasa/scalebar/pull/7): it fixes existing
+package metadata and keeps **1.3.5**. `lib/pmlatex/version.rb`, all runtime code,
+command behavior, runtime dependency constraints and the Ruby 2.6.10 / 4.0.9 CI
+matrix are unchanged. No Windows job is added.
+
+The correction starts at `origin/master` commit `811658d`. Its baseline suite
+passed on both Mac interpreters: **96 examples, 0 failures**. Replacing the
+single old Ruby-floor example with six independent admission examples first
+produced exactly three failures (2.6.0, 2.6.1 and 2.6.6). After correcting the
+gemspec and the fixed expectation in `script/verify_package.rb`, the examples
+reject 2.5.9 and admit 2.6.0, 2.6.1, 2.6.6, 2.6.10 and 4.0.9.
+
+Local verification on 2026-10-29 uses the existing dependency directories and
+the Mac-only Ruby 2 workaround documented below, without updating dependencies:
+
+| Interpreter | Tools | Result of `bundle exec rake verify` |
+|---|---|---|
+| macOS system Ruby 2.6.10 | Bundler 2.4.22, RubyGems 3.0.3.1 | 101 examples, 0 failures; strict build; isolated install, parser/log/renderer and all five CLI help paths |
+| Homebrew Ruby 4.0.9 | Bundler 4.0.23, RubyGems 4.0.23 | 101 examples, 0 failures; strict build; isolated install, parser/log/renderer and all five CLI help paths |
+
+Both strict builds produce `pmlatex-1.3.5.gem` with Ruby requirement `>= 2.6.0`.
+The final `pkg/pmlatex-1.3.5.gem` is verified under both interpreters, with a
+SHA-256 manifest at `pkg/pmlatex-1.3.5.gem.sha256`. Builder versions can produce
+different archive hashes; preserve the exact verified gem/checksum pair.
+The final archive's `bin/` and `lib/` contents are byte-identical to master.
+Local evidence and per-interpreter archives are retained under ignored
+`pkg/compatibility-1.3.5/`; neither generated gems nor lockfiles are committed.
+
+**Ruby 2.6.0 itself was not executed.** Metadata admission, source inspection
+and Ruby 2.6.10 syntax checks do not establish Ruby 2.6.0 runtime certification.
+Other interpreters, a fresh dependency resolution on 2.6.0, Docker, actual TeX/PDF
+compilation and live Medusa behavior remain unverified. The existing suite
+tests command operations using doubles and blocks HTTP; no registration,
+update, deletion or upload against a live Medusa service is performed.
+Hosted CI results must be checked on the PR separately from these Mac results.
+
+### Runtime dependency audit
+
+The installed gemspecs and runtime sources were inspected. Medusa REST Client
+1.5.2 and Optimist 3.2.1 both declare `required_ruby_version >= 0`, with no native
+extensions. Optimist has no runtime gem dependencies. The client depends on
+ActiveResource, rails-observers, Pry (~> 0.9) and GLI (~> 2.12). The complete
+resolved Ruby 2.6.10 runtime closure is below; all 18 gemspecs admit Ruby 2.6.0
+and none declares native extensions:
+
+| Gem | Resolved version | Declared Ruby requirement |
+|---|---|---|
+| medusa_rest_client | 1.5.2 | >= 0 |
+| optimist | 3.2.1 | >= 0 |
+| activeresource | 6.1.4 | >= 2.6.0 |
+| activemodel | 6.1.7.10 | >= 2.5.0 |
+| activesupport | 6.1.7.10 | >= 2.5.0 |
+| activemodel-serializers-xml | 1.0.3 | >= 0 |
+| builder | 3.3.0 | >= 0 |
+| concurrent-ruby | 1.3.8 | >= 2.3 |
+| i18n | 1.14.8 | >= 2.3.0 |
+| tzinfo | 2.0.6 | >= 1.9.3 |
+| zeitwerk | 2.6.18 | >= 2.5 |
+| minitest | 5.25.4 | >= 2.6, < 4.0 |
+| rails-observers | 0.1.5 | >= 2.2.2 |
+| pry | 0.14.2 | >= 2.0 |
+| coderay | 1.1.3 | >= 1.8.6 |
+| method_source | 1.1.0 | >= 0 |
+| gli | 2.22.2 | >= 0 |
+| ostruct | 0.6.3 | >= 2.5.0 |
+
+Ruby 2.6.10 compiled 908 Ruby source files from pmlatex and this closure;
+generator ERB templates named `.rb` were excluded because they are not executable
+Ruby source. pmlatex uses existing File/IO, regexp, string/encoding, Time, Math
+and Open3 APIs. The client's `String#match?` and Optimist's regexp matching are
+available in Ruby 2.6.0; optional DidYouMean support is guarded. ActiveSupport's
+`ruby2_keywords` use is guarded by `respond_to?`. No concrete requirement for
+Ruby 2.6.1 or later was identified in the inspected implementation or this closure.
+The source check cannot rule out interpreter patch-level bugs or unexercised paths.
+See the [Ruby 2.6.0 String API](https://docs.ruby-lang.org/en/2.6.0/String.html)
+and [ActiveResource 6.1.4 metadata](https://rubygems.org/gems/activeresource/versions/6.1.4).
+
+The Ruby 4 closure was also inspected. It uses ActiveResource 6.2.0 (Ruby >= 2.7),
+ActiveModel/ActiveSupport 8.1.4 (>= 3.2), I18n 1.15.2 (>= 3.1), and other newer
+transitive gems. Those resolved versions cannot be copied into a Ruby 2.6
+environment; resolve dependencies for each interpreter. Older compatible
+versions satisfy the unchanged client constraints, as the Ruby 2 closure shows.
+The local BigDecimal 1.4.1 / Pry 0.14.2 workaround remains development-only.
+Future versions allowed by the broad dependency ranges are not certified by
+this audit. No dependency update or constraint change is needed for this fix.
+
+## Same-version 1.3.5 redistribution
+
+This is a correction to an existing installation constraint, with no new feature
+or runtime behavior change, so the source version remains **1.3.5**. A local
+rebuild does not update any distributed copy. This task changes no GitHub
+Release, tag, university gem, repository index or installed user gem.
+
+Before any separately authorized replacement, preserve the old gem, metadata
+and checksum; record the corrected source commit and old/new SHA-256 values.
+The filename and name/version/platform tuple remain the same while bytes and
+Ruby metadata change. Distribute and verify the new gem and SHA-256 together.
+An existing GitHub Release may restrict asset replacement; check its current
+policy and permissions. If replacement is allowed, coordinate both assets to
+avoid a download seeing a new gem with an old checksum. Keep tags unchanged,
+and record the corrected source commit because tag source archives still point
+to the old source. The ordinary release workflow and `verify_release.rb` refuse
+existing Releases/assets; rerunning them is not a replacement mechanism.
+
+For the university gem repository, have its administrator identify the serving
+software and supported replacement procedure. Replacing only the `.gem` can leave
+the old Ruby floor in quick gemspecs, dependency/compact indexes or caches.
+Regenerate all applicable metadata/indexes from the retained gem set and deploy
+them consistently with the replacement archive. Check repository, proxy, mirror,
+client gem and quick-spec caches. The download helper's `--deploy` refuses an
+existing version directory and does not update a gem index.
+
+Existing installations and version-only lockfiles cannot distinguish the two
+1.3.5 archives; `gem update` has no higher version to select and Bundler may
+reuse cached bytes. Download the corrected gem/checksum into a fresh directory,
+verify SHA-256 and the embedded Ruby requirement, then explicitly reinstall
+the local archive in the intended interpreter/gem environment, for example
+`gem install --local --no-document PATH/pmlatex-1.3.5.gem` with dependencies
+already available. A lockfile containing the old checksum needs a reviewed
+refresh after authenticating the replacement; do not bypass a mismatch.
+
 ## Scope and evidence
 
 Baseline: `22a903e`. This maintenance work preserves command operations, bibliography
@@ -19,8 +146,9 @@ baseline did not mean scan worked on Ruby 4: its sole process-file example was
 skipped. The original log fixtures are present and tracked; the initial file
 listing omitted them because search respected ignore rules.
 
-The replacement suite has **96 examples, no failures or pending examples** in
-local maintenance verification on Ruby 2.6.10 and 4.0.9. Both interpreters also
+Before the Ruby minimum requirement correction above, the replacement suite had
+**96 examples, no failures or pending examples** in local maintenance verification
+on Ruby 2.6.10 and 4.0.9. Both interpreters also
 strictly built the gem and passed isolated installed-package verification.
 Hosted CI, Docker, live Medusa operations, real SVN commits, SSH deployment,
 actual Release upload/download and TeX/PDF compilation have not been run here.
