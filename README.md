@@ -7,9 +7,11 @@ records cited by the document. It does not compile LaTeX or generate a PDF.
 
 ## Ruby and dependencies
 
-Maintenance verification targets **Ruby 2.6.10 and Ruby 4.0.9**. The gem requires
-Ruby >= 2.6.10; other versions have not been verified. Ruby 2.6 is end-of-life
-and retained for existing installations.
+The gem requires **Ruby >= 2.6.0**. Local verification of this 1.3.5 requirement
+correction uses macOS **Ruby 2.6.10 and Ruby 4.0.9**, which also remain the CI
+targets. **Ruby 2.6.0 itself has not been tested**; the installation floor is
+distinct from the tested interpreter versions. Ruby 2.6 is end-of-life and
+retained for existing installations.
 
 Runtime dependencies are `medusa_rest_client` (~> 1.0) and `optimist` (~> 3.0).
 The verified versions are Medusa REST Client 1.5.2 and Optimist 3.2.1. The client
@@ -96,6 +98,15 @@ New versions retain older installed versions; reinstalling the same version
 replaces that version's files. Select the same `PATH`, `GEM_HOME` and `GEM_PATH`
 when running the installed command later. Recheck the interpreter after a
 Homebrew Ruby upgrade; this directory is intended for Ruby 4.0.
+
+The Ruby requirement correction keeps version **1.3.5** because it fixes existing
+package metadata without changing command behavior. A rebuild has the same
+filename/version but different bytes and SHA-256. Existing installations do not
+automatically receive the correction: verify the corrected gem/checksum pair
+and explicitly reinstall the local gem. Replacing a published copy also requires
+coordinating gem metadata/indexes, caches and any lockfile checksums. See
+[same-version redistribution](DEVELOPMENT.md#same-version-135-redistribution).
+This correction does not replace any Release, tag or university distribution.
 
 To run the installed command later, select the same environment and put its
 executable directory on PATH. Replace `--help` with the command you intend to run.
@@ -250,10 +261,12 @@ or tested in this maintenance session.
 1. Review and merge the maintenance changes, then confirm the hosted verification
    jobs pass on both Ruby versions. No tags or Releases are created by ordinary
    master pushes or pull requests.
-2. Choose a new, unused stable three-part version, update `lib/pmlatex/version.rb`,
-   and merge it into master. The source version is now **1.3.5**, increased from
-   1.3.4 for the Ruby compatibility fix. No tag or Release has been created for
-   this update. The existing `1.3.4` tag prevents reusing that older version.
+2. For a new release, choose a new, unused stable three-part version, update
+   `lib/pmlatex/version.rb`, and merge it into master. The source version was
+   increased from 1.3.4 to **1.3.5** in the earlier maintenance work. The present
+   Ruby minimum requirement correction deliberately retains **1.3.5**; it does
+   not authorize tagging, publication or replacement of existing artifacts.
+   The existing `1.3.4` tag prevents reusing that older version.
    On 2026-10-27, public tags were `1.2.1`, `1.3.0`, `1.3.1`, `1.3.3`, `1.3.4`,
    with no public Releases. Recheck remote tags, all Releases including drafts,
    and historical registry versions before tagging or publishing 1.3.5.

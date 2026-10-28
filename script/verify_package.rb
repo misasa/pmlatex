@@ -19,7 +19,7 @@ expected_files = Dir.chdir(root) { %w[README.md LICENSE.txt bin/pmlatex] + Dir['
 raise 'Unexpected or missing packaged files' unless package.contents.sort == expected_files.sort
 raise 'Wrong executable metadata' unless spec.executables == ['pmlatex']
 raise 'Wrong license metadata' unless spec.licenses == ['GPL-3.0-or-later']
-raise 'Wrong Ruby floor' unless spec.required_ruby_version.to_s == '>= 2.6.10'
+raise 'Wrong Ruby floor' unless spec.required_ruby_version.to_s == '>= 2.6.0'
 
 # A new gem home contains only the resolved dependency versions. No access to
 # unrelated installed gems, and no download or change to the user's gem home.

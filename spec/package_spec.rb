@@ -9,11 +9,18 @@ RSpec.describe 'Package contract' do
     expect(specification.licenses).to eq(['GPL-3.0-or-later'])
   end
 
-  it 'admits the two maintenance Rubies and excludes versions below the tested floor' do
-    requirement = specification.required_ruby_version
-    expect(requirement.satisfied_by?(Gem::Version.new('2.6.10'))).to be(true)
-    expect(requirement.satisfied_by?(Gem::Version.new('4.0.9'))).to be(true)
-    expect(requirement.satisfied_by?(Gem::Version.new('2.6.9'))).to be(false)
+  {
+    '2.5.9' => false,
+    '2.6.0' => true,
+    '2.6.1' => true,
+    '2.6.6' => true,
+    '2.6.10' => true,
+    '4.0.9' => true
+  }.each do |version, allowed|
+    it "#{allowed ? 'allows' : 'excludes'} installation on Ruby #{version}" do
+      requirement = specification.required_ruby_version
+      expect(requirement.satisfied_by?(Gem::Version.new(version))).to be(allowed)
+    end
   end
 
   it 'packages runtime code, its executable, README and license without development files' do
