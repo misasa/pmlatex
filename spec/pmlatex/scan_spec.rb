@@ -41,13 +41,78 @@ RSpec.describe Pmlatex::Scan do
     expect(File.read('report.tex')).to eq(source)
   end
 
-  it 'includes citations discovered only through the TeX log' do
-    write_report
-    File.write('report.log', '(./extra.tex)')
-    File.write('extra.tex', '\\refdream{stone-1}')
-    described_class.process_file('report.tex')
+  it 'prefers an existing texpand even when it is older than the source' do
+    source = document + "\\input{child}\n\\cite{bib-1}\n"
+    expanded = "\\cite{stone-1}\n"
+    write_report(source)
+    File.write('child.tex', '\\cite{bib-1}')
+    File.write('report.texpand', expanded)
+    old_time = File.mtime('report.tex') - 3600
+    File.utime(old_time, old_time, 'report.texpand')
+
+    described_class.process_file('report')
+
     expect(stone_relatives).to eq([bib])
     expect(File.read('report.ss')).to eq("bib-1\nparent\nstone-1\nchildren -y\n")
+    expect(File.read('report.tex')).to eq(source)
+    expect(File.read('report.texpand')).to eq(expanded)
+  end
+
+  it 'uses the original bibliography ID even when texpand contains a different one' do
+    write_report
+    File.write('report.texpand', document(bib_id: 'expanded-bib') + '\\cite{stone-1}')
+
+    described_class.process_file('report.tex')
+
+    expect(stone_relatives).to eq([bib])
+    expect(File.read('report.ss')).to eq("bib-1\nparent\nstone-1\nchildren -y\n")
+  end
+
+  it 'recursively scans the original source when texpand is absent' do
+    write_report(document + "\\input{child}\n")
+    File.write('child.tex', "\\include{grandchild}\n")
+    File.write('grandchild.tex', '\\cite{stone-1}')
+
+    described_class.process_file('report.tex')
+
+    expect(stone_relatives).to eq([bib])
+    expect(File.read('report.ss')).to eq("bib-1\nparent\nstone-1\nchildren -y\n")
+  end
+
+  it 'finds texpand beside the specified document rather than in the current directory' do
+    write_report
+    FileUtils.mkdir_p('reports')
+    FileUtils.mv(%w[report.tex report.pdf], 'reports')
+    File.write('reports/report.texpand', '\\cite{stone-1}')
+    File.write('report.texpand', '\\cite{bib-1}')
+
+    described_class.process_file('reports/report.pdf')
+
+    expect(stone_relatives).to eq([bib])
+    expect(File.read('reports/report.ss')).to eq("bib-1\nparent\nstone-1\nchildren -y\n")
+  end
+
+  it 'does not fall back to source citations when texpand is empty' do
+    write_report(document + '\\cite{stone-1}')
+    File.write('report.texpand', '')
+    File.write('report.ss', 'existing commands')
+
+    described_class.process_file('report.tex')
+
+    expect(stone_relatives).to be_empty
+    expect(File.read('report.ss')).to eq('existing commands')
+  end
+
+  [false, true].each do |expanded|
+    it "includes citations discovered only through the TeX log with texpand #{expanded ? 'present' : 'absent'}" do
+      write_report
+      File.write('report.texpand', '') if expanded
+      File.write('report.log', '(./extra.tex)')
+      File.write('extra.tex', '\\refdream{stone-1}')
+      described_class.process_file('report.tex')
+      expect(stone_relatives).to eq([bib])
+      expect(File.read('report.ss')).to eq("bib-1\nparent\nstone-1\nchildren -y\n")
+    end
   end
 
   it 'does not relink existing relatives but still exports their IDs' do
@@ -73,6 +138,7 @@ RSpec.describe Pmlatex::Scan do
 
   it 'rejects a missing bibliography ID before a remote lookup' do
     write_report(document(bib_id: nil))
+    File.write('report.texpand', document + '\\cite{stone-1}')
     expect(MedusaRestClient::Record).not_to receive(:find)
     expect { described_class.process_file('report.tex') }.to raise_error(/BibliographySisyphus/)
   end
@@ -80,6 +146,7 @@ RSpec.describe Pmlatex::Scan do
   %w[report.tex report.pdf].each do |missing|
     it "rejects missing #{missing} before a remote lookup" do
       write_report
+      File.write('report.texpand', document + '\\cite{stone-1}')
       File.delete(missing)
       expect(MedusaRestClient::Record).not_to receive(:find)
       expect { described_class.process_file('report.tex') }.to raise_error(/not found/)

@@ -17,9 +17,14 @@ Link cited Medusa records to the bibliography record identified in
 DOCUMENT.tex. Both DOCUMENT.tex and DOCUMENT.pdf must already exist,
 and the source must contain a BibliographySisyphus ID.
 
-Read citation IDs from the source, recursively included files, and
-TeX source paths found in DOCUMENT.log when that log exists. Run from
-the document directory so included files can be found.
+Read citation IDs from DOCUMENT.texpand when it exists; otherwise scan
+DOCUMENT.tex and recursively included files. Also read TeX source paths
+found in DOCUMENT.log when that log exists. The bibliography ID always
+comes from DOCUMENT.tex. Run from the document directory so included
+files can be found.
+
+Generate and refresh DOCUMENT.texpand externally. No timestamp comparison
+is made, and pmlatex does not run latexpand.
 
 If any citation IDs resolve, write them to DOCUMENT.ss. Existing links
 are not added again. If none resolve, no new ss file is written and
@@ -79,6 +84,7 @@ EOS
       basename = File.basename(fname, ".*")
       dirname = File.dirname(fname)
       texfilename = File.join(dirname, basename + '.tex')
+      texpandfilename = File.join(dirname, basename + '.texpand')
       logfilename = File.join(dirname, basename + '.log')
       pdffilename = File.join(dirname, basename + '.pdf')
       ssfilename = File.join(dirname, basename + '.ss')
@@ -112,7 +118,8 @@ EOS
       # [tex.citeyearpars, tex.citeps, tex.cites].flatten.each do |cite|
       #   check_cite(cite)
       # end      
-      rcheck_cite(ids, tex)
+      citation_tex = File.exist?(texpandfilename) ? Tex.from_file(texpandfilename, verbose) : tex
+      rcheck_cite(ids, citation_tex)
       if File.exist?(logfilename)
         log = parse_texlog(logfilename)
         log.include_files.each do |include_filename|
