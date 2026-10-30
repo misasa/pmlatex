@@ -99,7 +99,7 @@ replaces that version's files. Select the same `PATH`, `GEM_HOME` and `GEM_PATH`
 when running the installed command later. Recheck the interpreter after a
 Homebrew Ruby upgrade; this directory is intended for Ruby 4.0.
 
-The Ruby requirement correction keeps version **1.3.5** because it fixes existing
+The earlier Ruby requirement correction kept version **1.3.5** because it fixed existing
 package metadata without changing command behavior. A rebuild has the same
 filename/version but different bytes and SHA-256. Existing installations do not
 automatically receive the correction: verify the corrected gem/checksum pair
@@ -164,9 +164,15 @@ All four commands require both `report.tex` and `report.pdf` to exist, including
 | Command | Behavior and side effects |
 |---|---|
 | `pmlatex add report` | Create a bibliography record from title, authors and date; copy the source to `report.tex.backup`; insert `\BibliographySisyphus{ID}` into `report.tex`. Reject an already paired document. Does not upload the PDF or automatically run scan. |
-| `pmlatex scan report` | Find cited records in the source, recursively included files and paths found in `report.log` if present; link them to the bibliography. Write `report.ss` when any citations resolve. |
+| `pmlatex scan report` | Prefer `report.texpand` for citations when present; otherwise recursively scan `report.tex`. Also scan paths found in `report.log` if present. Always take the bibliography ID from `report.tex`, link cited records, and write `report.ss` when any citations resolve. |
 | `pmlatex commit report` | Upload `report.pdf` to the parsed bibliography ID. For an attachment with the same filename, prompt to replace, cancel (`n`), or append (`append`). An empty reply means replace and deletes the old attachment before upload. |
 | `pmlatex update report` | Compare title, authors, year and month with the record. Prompt before saving changed metadata; an empty reply means yes. Leave the source unchanged. |
+
+For documents using `\subimport` or custom macros such as `\inputX`, generate
+`report.texpand` externally before scanning. Pmlatex uses it whenever it exists,
+even if it is older than `report.tex`; generating it and keeping it current are
+the caller's responsibility. Pmlatex does not run `latexpand` or add special
+parsing for these commands.
 
 Typical first registration:
 
@@ -263,8 +269,8 @@ or tested in this maintenance session.
    master pushes or pull requests.
 2. For a new release, choose a new, unused stable three-part version, update
    `lib/pmlatex/version.rb`, and merge it into master. The source version was
-   increased from 1.3.4 to **1.3.5** in the earlier maintenance work. The present
-   Ruby minimum requirement correction deliberately retains **1.3.5**; it does
+   increased from 1.3.4 to **1.3.5** in the earlier maintenance work. The earlier
+   Ruby minimum requirement correction deliberately retained **1.3.5**; it does
    not authorize tagging, publication or replacement of existing artifacts.
    The existing `1.3.4` tag prevents reusing that older version.
    On 2026-10-27, public tags were `1.2.1`, `1.3.0`, `1.3.1`, `1.3.3`, `1.3.4`,
