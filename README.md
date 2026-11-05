@@ -5,10 +5,14 @@ It creates a bibliography record, inserts its Medusa ID into the source,
 uploads an already compiled PDF, updates bibliography metadata, and links
 records cited by the document. It does not compile LaTeX or generate a PDF.
 
+Version **1.3.6** adds support for reading citations from an externally generated
+`DOCUMENT.texpand`. See [Commands and file changes](#commands-and-file-changes)
+for source selection and refresh requirements.
+
 ## Ruby and dependencies
 
-The gem requires **Ruby >= 2.6.0**. Local verification of this 1.3.5 requirement
-correction uses macOS **Ruby 2.6.10 and Ruby 4.0.9**, which also remain the CI
+The gem requires **Ruby >= 2.6.0**. Local verification of 1.3.6 uses macOS
+**Ruby 2.6.10 and Ruby 4.0.9**, which also remain the CI
 targets. **Ruby 2.6.0 itself has not been tested**; the installation floor is
 distinct from the tested interpreter versions. Ruby 2.6 is end-of-life and
 retained for existing installations.
@@ -22,11 +26,13 @@ pmlatex itself, not its dependency gems or `pmlatex.sty`.
 
 ## Download a verified Release
 
-Distribution is being moved to public [GitHub Releases](https://github.com/misasa/pmlatex/releases).
-The former GitHub Packages publishing workflow has been removed. Ordinary pushes
-and pull requests run verification only. No Release was published as part of
-this maintenance work; until the first public Release exists, the download
-helper fails clearly. It never substitutes an unverified source build.
+Verified gems and SHA-256 manifests are distributed through public
+[GitHub Releases](https://github.com/misasa/pmlatex/releases).
+[Version 1.3.6](https://github.com/misasa/pmlatex/releases/tag/v1.3.6) was published
+on 2026-11-03. The former GitHub Packages publishing workflow has been removed.
+Ordinary pushes and pull requests run verification only. The download helper
+fails clearly if a Release or its assets cannot be fetched; it never substitutes
+an unverified source build.
 
 From this checkout, use Bash, curl, `shasum` and the POSIX `link` utility on macOS or Jenkins. Downloading
 requires no GitHub token, `gh` login, Ruby, or gem installation.
@@ -35,8 +41,8 @@ requires no GitHub token, `gh` login, Ruby, or gem installation.
 # Latest stable public Release; use a fresh output directory.
 bash script/download_release.sh --output-dir ./downloads
 
-# Pin a future published version (example only; 1.3.5 is not published here).
-bash script/download_release.sh --version 1.3.5 --output-dir ./downloads-1.3.5
+# Pin 1.3.6; the installation example below uses this download.
+bash script/download_release.sh --version 1.3.6 --output-dir ./downloads-1.3.6
 ```
 
 The helper downloads `pmlatex-VERSION.gem` and `pmlatex-VERSION.gem.sha256`,
@@ -56,7 +62,7 @@ For a separate, explicitly requested transfer to a university Web server:
 
 ```sh
 export PMLATEX_DEPLOY_DEST='user@server.example.edu:/absolute/web/path'
-bash script/download_release.sh --version 1.3.5 --output-dir ./transfer-1.3.5 --deploy
+bash script/download_release.sh --version 1.3.6 --output-dir ./transfer-1.3.6 --deploy
 ```
 
 Use the real destination and existing noninteractive SSH credentials/known host.
@@ -72,7 +78,8 @@ configure a Web server or update a gem index.
 
 These commands assume Ruby 4 already exists at `/opt/homebrew/opt/ruby/bin/ruby`.
 They select a dedicated gem directory without modifying system Ruby or shell
-startup files. Replace the filename below with an actual downloaded Release.
+startup files. The example uses the pinned 1.3.6 download above. For another
+Release, replace both the directory and filename with the verified download path.
 The `--source` option supplies the university client repository for dependency
 installation; RubyGems.org must also remain an available source.
 
@@ -86,7 +93,7 @@ installation; RubyGems.org must also remain an available source.
   ruby -v
   gem install --no-document --clear-sources --source https://rubygems.org \
     --source https://dream.misasa.okayama-u.ac.jp/rubygems/ \
-    ./downloads/pmlatex-1.3.5.gem
+    ./downloads-1.3.6/pmlatex-1.3.6.gem
   "$GEM_HOME/bin/pmlatex" --help
 )
 ```
@@ -99,14 +106,11 @@ replaces that version's files. Select the same `PATH`, `GEM_HOME` and `GEM_PATH`
 when running the installed command later. Recheck the interpreter after a
 Homebrew Ruby upgrade; this directory is intended for Ruby 4.0.
 
-The earlier Ruby requirement correction kept version **1.3.5** because it fixed existing
-package metadata without changing command behavior. A rebuild has the same
-filename/version but different bytes and SHA-256. Existing installations do not
-automatically receive the correction: verify the corrected gem/checksum pair
-and explicitly reinstall the local gem. Replacing a published copy also requires
-coordinating gem metadata/indexes, caches and any lockfile checksums. See
-[same-version redistribution](DEVELOPMENT.md#same-version-135-redistribution).
-This correction does not replace any Release, tag or university distribution.
+Version **1.3.6** includes the Ruby minimum requirement correction previously
+made for **1.3.5**. To upgrade, download and verify 1.3.6, then install it as
+shown above. The earlier same-version metadata correction and its redistribution
+considerations are recorded in
+[DEVELOPMENT.md](DEVELOPMENT.md#same-version-135-redistribution).
 
 To run the installed command later, select the same environment and put its
 executable directory on PATH. Replace `--help` with the command you intend to run.
@@ -177,6 +181,7 @@ parsing for these commands.
 Typical first registration:
 
 ```sh
+pdflatex report
 pmlatex add report
 # Recompile report.tex using your existing TeX toolchain after ID insertion.
 pdflatex report
@@ -268,16 +273,13 @@ or tested in this maintenance session.
    jobs pass on both Ruby versions. No tags or Releases are created by ordinary
    master pushes or pull requests.
 2. For a new release, choose a new, unused stable three-part version, update
-   `lib/pmlatex/version.rb`, and merge it into master. The source version was
-   increased from 1.3.4 to **1.3.5** in the earlier maintenance work. The earlier
-   Ruby minimum requirement correction deliberately retained **1.3.5**; it does
-   not authorize tagging, publication or replacement of existing artifacts.
-   The existing `1.3.4` tag prevents reusing that older version.
-   On 2026-10-27, public tags were `1.2.1`, `1.3.0`, `1.3.1`, `1.3.3`, `1.3.4`,
-   with no public Releases. Recheck remote tags, all Releases including drafts,
-   and historical registry versions before tagging or publishing 1.3.5.
+   `lib/pmlatex/version.rb`, and merge it into master. The current source version
+   is **1.3.6**. Versions **1.3.5** and **1.3.6** already have public Releases;
+   do not reuse them. Recheck remote tags, all Releases including drafts, and
+   historical registry versions before choosing the next version. The historical
+   1.3.5 metadata correction is not a procedure for publishing a new release.
 3. Only after separate release authorization, create an annotated `vVERSION` tag
-   on the intended master commit and push that tag. This task has done neither.
+   on the intended master commit and push that tag.
 4. The tag workflow waits for both verification jobs. Its release job validates
    version, tag, event/checkout commit, master ancestry and existing Releases,
    then strictly builds and verifies the installed gem. Only this job receives

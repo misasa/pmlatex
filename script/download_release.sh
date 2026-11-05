@@ -7,7 +7,7 @@ usage() {
   cat <<'HELP'
 Usage: download_release.sh [--version VERSION] [--output-dir DIR] [--deploy]
 Default: download the latest stable public Release into the current directory.
-VERSION: 1.3.5 or v1.3.5 (stable three-part versions only).
+VERSION: 1.3.6 or v1.3.6 (stable three-part versions only).
 --deploy: also scp the verified files into a NEW vVERSION directory under
           PMLATEX_DEPLOY_DEST=user@host:/absolute/path (SSH access required).
 Existing local files or remote version directories are never replaced.
@@ -24,7 +24,7 @@ while [ "$#" -gt 0 ]; do
       case "$1" in
         --version)
           version=${2#v}
-          [ -n "$version" ] || fail 'Expected a stable version such as 1.3.5' ;;
+          [ -n "$version" ] || fail 'Expected a stable version such as 1.3.6' ;;
         --output-dir) output_dir=$2 ;;
       esac
       shift 2 ;;
@@ -36,7 +36,7 @@ done
 
 stable_version='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
 if [ -n "$version" ]; then
-  [[ "$version" =~ $stable_version ]] || fail 'Expected a stable version such as 1.3.5'
+  [[ "$version" =~ $stable_version ]] || fail 'Expected a stable version such as 1.3.6'
 fi
 if "$deploy"; then
   destination=${PMLATEX_DEPLOY_DEST:-}
