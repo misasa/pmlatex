@@ -1,15 +1,70 @@
 # Development and regression verification
 
+## Current release: 1.3.6
+
+The source version is **1.3.6**. The public
+[v1.3.6 Release](https://github.com/misasa/pmlatex/releases/tag/v1.3.6), published
+on 2026-11-03, contains `pmlatex-1.3.6.gem` and its SHA-256 manifest. Version
+[1.3.5](https://github.com/misasa/pmlatex/releases/tag/v1.3.5) is also published.
+Use a new, unused version for a future release; the ordinary workflow refuses
+existing Releases and assets.
+
+### Citation scanning change
+
+Commit `6d5131f` adds externally expanded TeX input to `scan`:
+
+- When `DOCUMENT.texpand` exists beside the specified document, scan it for
+  citations using the existing parser and include recursion. Otherwise, scan
+  `DOCUMENT.tex` and its recursively included files.
+- The expanded file is used regardless of its modification time. An empty
+  expanded file does not fall back to citations in the original source.
+- Paths found in `DOCUMENT.log` are scanned additionally when the log exists,
+  whether or not an expanded file is present.
+- Both `DOCUMENT.tex` and `DOCUMENT.pdf` must still exist. The bibliography ID
+  always comes from `DOCUMENT.tex`, even if the expanded file has another ID.
+- Generate and refresh the expanded file externally, including expansion of
+  custom commands such as `\subimport` and `\inputX`. Pmlatex does not run
+  `latexpand` or add special parsing for those commands.
+
+The source and expanded file remain unchanged. If citation IDs resolve, scan
+links them and writes `DOCUMENT.ss`; if none resolve, an existing ss file is
+left unchanged. The existing parser and failure boundaries documented below
+still apply.
+
+### Local verification on 2026-11-05
+
+Using the existing per-interpreter dependency directories and the Mac-only
+Ruby 2 workaround in [README.md](README.md), `bundle exec rake verify` runs
+**107 examples**. The six additional examples since the 101-example 1.3.5
+suite cover expanded-source selection, original bibliography IDs, source
+fallback, document-relative expanded paths, empty expanded files, and log
+scanning with expanded input.
+
+| Interpreter | Result |
+|---|---|
+| macOS system Ruby 2.6.10, Bundler 2.4.22 | 107 examples, 0 failures; strict 1.3.6 build; isolated installed-package and all five CLI help checks |
+| Homebrew Ruby 4.0.9, Bundler 4.0.23 | 107 examples, 0 failures; strict 1.3.6 build; isolated installed-package and all five CLI help checks |
+
+These results apply to this checkout, including the documentation update. A
+local build does not replace the published gem or its checksum. Ruby 2.6.0,
+Docker, real TeX/PDF compilation and live Medusa operations were not exercised
+by this local verification.
+
+The following sections retain the **1.3.5 maintenance history from
+2026-10-27 through 2026-10-29** and its regression evidence. Statements about
+unchanged runtime behavior and the 96/101-example suites refer to that earlier
+work, before the 1.3.6 citation scanning change described above.
+
 ## Ruby minimum requirement correction for 1.3.5
 
 The installation requirement is **Ruby >= 2.6.0**. Commit `8312451`
 (2026-10-27, preparation of 1.3.5) introduced `>= 2.6.10` alongside tests and
 documentation tied to the tested Mac interpreter. That conflated the verification
 target with the minimum installation requirement. This correction follows
-[scalebar PR #7](https://github.com/misasa/scalebar/pull/7): it fixes existing
-package metadata and keeps **1.3.5**. `lib/pmlatex/version.rb`, all runtime code,
+[scalebar PR #7](https://github.com/misasa/scalebar/pull/7): it fixed existing
+package metadata and kept **1.3.5**. `lib/pmlatex/version.rb`, all runtime code,
 command behavior, runtime dependency constraints and the Ruby 2.6.10 / 4.0.9 CI
-matrix are unchanged. No Windows job is added.
+matrix were unchanged by that correction. No Windows job was added.
 
 The correction starts at `origin/master` commit `811658d`. Its baseline suite
 passed on both Mac interpreters: **96 examples, 0 failures**. Replacing the
@@ -94,10 +149,11 @@ this audit. No dependency update or constraint change is needed for this fix.
 
 ## Same-version 1.3.5 redistribution
 
-This is a correction to an existing installation constraint, with no new feature
-or runtime behavior change, so the source version remains **1.3.5**. A local
-rebuild does not update any distributed copy. This task changes no GitHub
-Release, tag, university gem, repository index or installed user gem.
+The earlier installation-constraint correction introduced no new feature or
+runtime behavior change and kept the source version at **1.3.5**. Its local
+rebuild did not itself update any distributed copy. These notes concern
+redistributing that older version; for a current upgrade, use the verified
+1.3.6 download and installation procedure in [README.md](README.md).
 
 Before any separately authorized replacement, preserve the old gem, metadata
 and checksum; record the corrected source commit and old/new SHA-256 values.
@@ -119,25 +175,27 @@ client gem and quick-spec caches. The download helper's `--deploy` refuses an
 existing version directory and does not update a gem index.
 
 Existing installations and version-only lockfiles cannot distinguish the two
-1.3.5 archives; `gem update` has no higher version to select and Bundler may
-reuse cached bytes. Download the corrected gem/checksum into a fresh directory,
+1.3.5 archives; `gem update` cannot select between archives with the same version,
+and Bundler may reuse cached bytes. If remaining on 1.3.5, download the corrected
+gem/checksum into a fresh directory,
 verify SHA-256 and the embedded Ruby requirement, then explicitly reinstall
 the local archive in the intended interpreter/gem environment, for example
 `gem install --local --no-document PATH/pmlatex-1.3.5.gem` with dependencies
 already available. A lockfile containing the old checksum needs a reviewed
 refresh after authenticating the replacement; do not bypass a mismatch.
 
-## Scope and evidence
+## Scope and evidence for the 1.3.5 maintenance work
 
-Baseline: `22a903e`. This maintenance work preserves command operations, bibliography
-semantics, parsing and generated document content. The only command-logic change is
+Baseline: `22a903e`. The 1.3.5 maintenance work preserved command operations,
+bibliography semantics, parsing and generated document content. Its only
+command-logic change was
 `File.exists?` to `File.exist?` in `Scan.process_file`: Ruby 4 no longer provides
 the old alias, while Ruby 2.6 supports both. The new scan tests reached this
 previously untested path and failed with `NoMethodError` before the substitution.
 A subsequent user-requested English help revision changes only banner strings
 and option descriptions in App/Add/Commit/Update/Scan. Argument parsing,
-confirmation handling, and file/server operations are unchanged. The source
-version is 1.3.5, increased from 1.3.4 at the user's request for the Ruby
+confirmation handling, and file/server operations were unchanged by that revision.
+The source version at that stage was 1.3.5, increased from 1.3.4 for the Ruby
 compatibility fix.
 
 Original suite on Ruby 4.0.9: **30 examples, 0 failures, 1 pending**, with one
@@ -256,16 +314,14 @@ uploads a draft, re-downloads both assets, compares bytes and checksum, then
 publishes. No regular push publishes a gem, no tags are created by automation,
 and the former unconditional GitHub Packages workflow is removed.
 
-The source version is now 1.3.5, a user-requested patch increase from 1.3.4 for
-the Ruby compatibility fix. No tag or Release has been created for this update.
-Public Git tags already include 1.3.4, which must not be republished. Recheck
-version availability before a separately authorized tag/publication step.
-Public tags on 2026-10-27 were 1.2.1, 1.3.0, 1.3.1, 1.3.3, 1.3.4 and the public
-Releases API returned an empty list. Public API evidence does not rule out
-private drafts or older university/GitHub registry uploads. Recheck those with
-maintainer access before choosing a release number.
+The earlier maintenance work increased the source version from 1.3.4 to 1.3.5
+for the Ruby compatibility fix. Its initial local verification did not create
+a tag or Release. Versions 1.3.5 and 1.3.6 have since been published; see the
+current release section above. Before choosing another release number, recheck
+remote tags, all Releases including drafts, and historical university/GitHub
+registry versions with maintainer access.
 
-## Ruby environments
+## Ruby environments used for the 1.3.5 verification
 
 | Environment | Resolved dependency highlights | Verification |
 |---|---|---|
